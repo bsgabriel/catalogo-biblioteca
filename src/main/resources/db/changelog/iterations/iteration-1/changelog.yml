@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: iteration_1-create_table-editoras
+      author: bsgabriel
+      description: "Cria tabela de editoras"
+      changes:
+        - sqlFile:
+            path: sql/001-create_table-editoras.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: iteration_1-create_table-autores
+      author: bsgabriel
+      description: "Cria tabela de autores"
+      changes:
+        - sqlFile:
+            path: sql/002-create_table-autores.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: iteration_1-create_table-livros
+      author: bsgabriel
+      description: "Cria tabela de livros"
+      changes:
+        - sqlFile:
+            path: sql/003-create_table-livros.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: iteration_1-create_table-livro_autor
+      author: bsgabriel
+      description: "Cria tabela relacionando livros e seus autores"
+      changes:
+        - sqlFile:
+            path: sql/004-create_table-livro_autor.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: iteration_1-create_table-livro_semelhante
+      author: bsgabriel
+      description: "Cria tabela relacionando livros e seus semelhantes"
+      changes:
+        - sqlFile:
+            path: sql/005-create_table-livro_semelhante.sql
+            relativeToChangelogFile: true

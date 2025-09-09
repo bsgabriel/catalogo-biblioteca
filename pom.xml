@@ -23,6 +23,7 @@
         <postgresql.version>42.6.0</postgresql.version>
         <javax.peristence-api.version>2.2</javax.peristence-api.version>
         <logback.version>1.2.12</logback.version>
+        <jgoodies.forms.version>1.9.0</jgoodies.forms.version>
     </properties>
 
     <dependencies>
@@ -66,6 +67,13 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
+        </dependency>
+
+        <!-- UI -->
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>jgoodies-forms</artifactId>
+            <version>${jgoodies.forms.version}</version>
         </dependency>
     </dependencies>
 

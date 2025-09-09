@@ -26,16 +26,36 @@ public abstract class ListagemView extends JFrame {
 
     private PainelPesquisa painelPesquisa;
 
+    /**
+     * Efetua a consulta de um livro
+     *
+     * @param termo Usado para efetuar a busca
+     */
     protected abstract void pesquisarLivro(String termo);
 
+    /**
+     * Abre a tela de cadastro de livro
+     */
     protected abstract void adicionarLivro();
 
+    /**
+     * Abre a tela de edição de livro
+     */
     protected abstract void editarLivro();
 
+    /**
+     * Exclui o livro selecionado
+     */
     protected abstract void removerLivro();
 
+    /**
+     * Abre a tela para importação de arquivo
+     */
     protected abstract void importarArquivo();
 
+    /**
+     * Atualiza a lista de livros (remove e busca novamente)
+     */
     protected abstract void atualizarListaLivros();
 
     public ListagemView() {
@@ -44,6 +64,9 @@ public abstract class ListagemView extends JFrame {
         configurarTela();
     }
 
+    /**
+     * Configuração geral da tela (tamanho, título, etc)
+     */
     private void configurarTela() {
         setTitle("Gerenciamento de Livros");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -52,6 +75,9 @@ public abstract class ListagemView extends JFrame {
         setMinimumSize(new Dimension(800, 600));
     }
 
+    /**
+     * Instanciação dos componentes
+     */
     private void inicializarComponentes() {
         tabelaLivros = new TabelaLivros();
 
@@ -70,6 +96,9 @@ public abstract class ListagemView extends JFrame {
         painelPesquisa.setOnPesquisar(this::pesquisarLivro);
     }
 
+    /**
+     * Cria o painel principal (que fica no JFrame)
+     */
     private void criarPainelPrincipal() {
         this.add(FormBuilder.create()
                 .layout(new FormLayout("fill:pref:grow", "pref, 5dlu, fill:pref:grow, 5dlu, pref, 5dlu, pref"))
@@ -82,6 +111,11 @@ public abstract class ListagemView extends JFrame {
                 .build());
     }
 
+    /**
+     * Cria um JPanel para a tabela, com borda de título.
+     *
+     * @return Um @{@link JPanel} com a tabela
+     */
     private JPanel criarPainelTabela() {
         return FormBuilder.create()
                 .layout(new FormLayout("fill:pref:grow", "fill:pref:grow"))
@@ -91,6 +125,11 @@ public abstract class ListagemView extends JFrame {
                 .build();
     }
 
+    /**
+     * Cria o painel de ações (adicionar, editar, remover e importar livro).
+     *
+     * @return Um {@link JPanel} com botões de ação.
+     */
     private JPanel criarPainelBotoes() {
         return FormBuilder.create()
                 .layout(new FormLayout("pref, 5dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu, pref", "pref"))
@@ -102,6 +141,11 @@ public abstract class ListagemView extends JFrame {
                 .build();
     }
 
+    /**
+     * Cria o painel com barrinha de carregamento
+     *
+     * @return Um {@link JPanel} com barra e label de status.
+     */
     private JPanel criarPainelStatus() {
         return FormBuilder.create()
                 .layout(new FormLayout("pref, 4dlu, fill:pref:grow", "pref"))

@@ -76,4 +76,7 @@ public class ListaAutores extends JList<AutorDto> {
         });
     }
 
+    public boolean contemItem() {
+        return listModel.isEmpty();
+    }
 }

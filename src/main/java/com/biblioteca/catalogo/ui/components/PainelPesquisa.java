@@ -23,9 +23,6 @@ public class PainelPesquisa extends JPanel {
     @Setter
     private Consumer<String> onPesquisar;
 
-    @Setter
-    private Runnable onLimpar;
-
     /**
      * Gera um painel de pesquisa com o botão de limpar sendo exibido
      *
@@ -46,7 +43,6 @@ public class PainelPesquisa extends JPanel {
         configurarLayout(titulo, exibirLimpar);
         configurarEventos();
     }
-
 
     private void inicializarComponentes() {
         this.campoPesquisa = InputFactory.criarInputTexto();
@@ -101,5 +97,15 @@ public class PainelPesquisa extends JPanel {
         botaoPesquisar.setEnabled(habilitado);
         botaoLimparPesquisa.setEnabled(habilitado);
     }
+
+    /**
+     * Método que retorna o texto digitado, sem espaços extras
+     *
+     * @return Uma {@link String} com o texto digitado
+     */
+    public String getText() {
+        return campoPesquisa.getText().trim();
+    }
+
 
 }

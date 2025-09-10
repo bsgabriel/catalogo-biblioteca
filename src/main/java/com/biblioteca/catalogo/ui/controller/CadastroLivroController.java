@@ -16,28 +16,8 @@ public class CadastroLivroController extends CadastroLivroView {
     }
 
     @Override
-    protected void adicionarAutor() {
-
-    }
-
-    @Override
-    protected void removerAutor() {
-
-    }
-
-    @Override
     protected void salvar() {
 
-    }
-
-    @Override
-    protected void cancelar() {
-
-    }
-
-    @Override
-    protected void limpar() {
-        limparTela();
     }
 
 }

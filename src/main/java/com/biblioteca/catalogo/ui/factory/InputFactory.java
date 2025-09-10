@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Locale;
 
 @NoArgsConstructor
@@ -49,6 +50,7 @@ public final class InputFactory {
      * <br> -Formato de data brasileiro
      * <br> -Não permite digitação
      * <br> -Ícone de calendário
+     * <br> -Não permite selecionar datas depois de hoje
      *
      * @return Um {@link DatePicker } com configurações padrão
      */
@@ -67,8 +69,9 @@ public final class InputFactory {
         datePicker.getComponentToggleCalendarButton().setText("");
         datePicker.getComponentToggleCalendarButton().setIcon(dateExampleIcon);
 
-        return datePicker;
+        config.setDateRangeLimits(null, LocalDate.now());
 
+        return datePicker;
     }
 
 

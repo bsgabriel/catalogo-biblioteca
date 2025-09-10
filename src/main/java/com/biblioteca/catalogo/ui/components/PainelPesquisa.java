@@ -25,15 +25,26 @@ public class PainelPesquisa extends JPanel {
     private Runnable onLimpar;
 
     /**
-     * Construtor do componente
+     * Gera um painel de pesquisa com o botão de limpar sendo exibido
      *
      * @param titulo Título que será exibido na borda do painel
      */
     public PainelPesquisa(String titulo) {
+        this(titulo, true);
+    }
+
+    /**
+     * Gera um painel de pesquisa permitindo esconder o botão de limpar
+     *
+     * @param titulo       Título que será exibido na borda do painel
+     * @param exibirLimpar Define se o botão de limpar será exibido ou não
+     */
+    public PainelPesquisa(String titulo, boolean exibirLimpar) {
         inicializarComponentes();
-        configurarLayout(titulo);
+        configurarLayout(titulo, exibirLimpar);
         configurarEventos();
     }
+
 
     private void inicializarComponentes() {
         this.campoPesquisa = new JTextField();
@@ -41,14 +52,16 @@ public class PainelPesquisa extends JPanel {
         this.botaoLimparPesquisa = new JButton("Limpar");
     }
 
-    private void configurarLayout(String titulo) {
-        this.setLayout(new FormLayout("right:pref, 5dlu, fill:150dlu:grow, 5dlu, pref, 5dlu, pref", "pref"));
+    private void configurarLayout(String titulo, boolean exibirLimpar) {
+        this.setLayout(new FormLayout("fill:150dlu:grow, 5dlu, pref, 5dlu, pref", "pref"));
         this.setBorder(new TitledBorder(titulo));
 
-        this.add(new JLabel("Pesquisar:"), "1,1");
-        this.add(campoPesquisa, "3,1");
-        this.add(botaoPesquisar, "5,1");
-        this.add(botaoLimparPesquisa, "7,1");
+        this.add(campoPesquisa, "1,1");
+        this.add(botaoPesquisar, "3,1");
+
+        if (exibirLimpar) {
+            this.add(botaoLimparPesquisa, "5,1");
+        }
     }
 
     private void configurarEventos() {

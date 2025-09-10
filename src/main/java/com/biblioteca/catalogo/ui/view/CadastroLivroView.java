@@ -37,16 +37,41 @@ public abstract class CadastroLivroView extends JDialog {
     private JLabel labelStatus;
     private JProgressBar progressBar;
 
+    /**
+     * Ação disparada pelo componente {@link #inputISBN}
+     *
+     * @param isbn Código Universal para buscar
+     */
+
     protected abstract void buscarISBN(String isbn);
+
+    /**
+     * Ação disparada ao clicar no botão {@link #btnAdicionarAutor}
+     */
 
     protected abstract void adicionarAutor();
 
+    /**
+     * Ação disparada ao clicar no botão {@link #btnRemoverAutor}
+     */
     protected abstract void removerAutor();
 
+    /**
+     * Ação disparada ao clicar no botão {@link #btnSalvar}
+     */
     protected abstract void salvar();
 
+    /**
+     * Fecha a tela. Disparado em:
+     * <br>-Botão de cancelar
+     * <br>-Botão de fechar (canto da tela)
+     * <br>-Ao pressionar ESC
+     */
     protected abstract void cancelar();
 
+    /**
+     * Ação disparada ao clicar em {@link #btnLimpar}
+     */
     protected abstract void limpar();
 
     public CadastroLivroView(JFrame parent) {
@@ -104,7 +129,7 @@ public abstract class CadastroLivroView extends JDialog {
     }
 
     /**
-     * Cria o painel principal
+     * Adiciona os componentes na janela
      */
     private void criarPainelPrincipal() {
         add(FormBuilder.create()

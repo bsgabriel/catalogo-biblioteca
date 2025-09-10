@@ -5,8 +5,6 @@ import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.function.Consumer;
 
 import static java.util.Objects.isNull;
@@ -26,7 +24,7 @@ public class ListaAutores extends JList<AutorDto> {
 
     private void configurarLista() {
         setModel(listModel);
-        setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         setCellRenderer(new DefaultListCellRenderer() {
             @Override
@@ -43,35 +41,29 @@ public class ListaAutores extends JList<AutorDto> {
             }
         });
 
-        addMouseListener(new MouseAdapter() {
-            private int lastSelectedIndex = -1;
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                int clickedIndex = locationToIndex(e.getPoint());
-
-                if (clickedIndex < 0) {
-                    return;
-                }
-
-                if (clickedIndex == lastSelectedIndex && clickedIndex == getSelectedIndex()) {
-                    clearSelection();
-                    lastSelectedIndex = -1;
-                } else {
-                    setSelectedIndex(clickedIndex);
-                    lastSelectedIndex = clickedIndex;
-                }
-            }
-        });
-
     }
 
     public void limparRegistros() {
         listModel.clear();
     }
 
-    public void adicionarAutor(AutorDto autor) {
-        listModel.addElement(autor);
+    public void adicionarAutor(String nome) {
+        listModel.addElement(AutorDto.builder()
+                .nome(nome)
+                .build());
+    }
+
+    @Override
+    public void remove(int index) {
+        listModel.remove(index);
+    }
+
+    public void removerSelecionados() {
+        int[] selecionados = this.getSelectedIndices();
+        for (int i = selecionados.length - 1; i >= 0; i--) {
+            listModel.remove(selecionados[i]);
+        }
+
     }
 
     private void configurarEventos() {

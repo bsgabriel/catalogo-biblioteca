@@ -1,5 +1,7 @@
 package com.biblioteca.catalogo.ui.components;
 
+import com.biblioteca.catalogo.ui.factory.InputFactory;
+import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import lombok.Setter;
 
@@ -47,20 +49,23 @@ public class PainelPesquisa extends JPanel {
 
 
     private void inicializarComponentes() {
-        this.campoPesquisa = new JTextField();
+        this.campoPesquisa = InputFactory.criarInputTexto();
         this.botaoPesquisar = new JButton("Pesquisar");
         this.botaoLimparPesquisa = new JButton("Limpar");
     }
 
     private void configurarLayout(String titulo, boolean exibirLimpar) {
-        this.setLayout(new FormLayout("fill:150dlu:grow, 5dlu, pref, 5dlu, pref", "pref"));
+        String colunas = exibirLimpar ? "3dlu, fill:150dlu:grow, 5dlu, pref, 5dlu, pref, 3dlu" : "3dlu, fill:150dlu:grow, 5dlu, pref, 3dlu";
+        String linhas = "3dlu, pref, 3dlu";
+        this.setLayout(new FormLayout(colunas, linhas));
         this.setBorder(new TitledBorder(titulo));
 
-        this.add(campoPesquisa, "1,1");
-        this.add(botaoPesquisar, "3,1");
+        CellConstraints cc = new CellConstraints();
+        this.add(campoPesquisa, cc.xy(2, 2));
+        this.add(botaoPesquisar, cc.xy(4, 2));
 
         if (exibirLimpar) {
-            this.add(botaoLimparPesquisa, "5,1");
+            this.add(botaoLimparPesquisa, cc.xy(6, 2));
         }
     }
 

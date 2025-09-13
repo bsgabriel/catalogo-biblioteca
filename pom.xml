@@ -24,6 +24,9 @@
         <javax.peristence-api.version>2.2</javax.peristence-api.version>
         <logback.version>1.2.12</logback.version>
         <jgoodies.forms.version>1.9.0</jgoodies.forms.version>
+        <retrofit.version>3.0.0</retrofit.version>
+        <jackson-converter.version>3.0.0</jackson-converter.version>
+        <jackson-datatype.version>2.20.0</jackson-datatype.version>
     </properties>
 
     <dependencies>
@@ -79,6 +82,23 @@
             <groupId>com.github.lgooddatepicker</groupId>
             <artifactId>LGoodDatePicker</artifactId>
             <version>11.2.1</version>
+        </dependency>
+
+        <!-- http -->
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-jackson</artifactId>
+            <version>${jackson-converter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson-datatype.version}</version>
         </dependency>
     </dependencies>
 

@@ -1,5 +1,6 @@
 package com.biblioteca.catalogo.ui.view;
 
+import com.biblioteca.catalogo.dto.LivroDto;
 import com.biblioteca.catalogo.ui.components.ListaAutores;
 import com.biblioteca.catalogo.ui.components.PainelPesquisa;
 import com.biblioteca.catalogo.ui.factory.InputFactory;
@@ -7,6 +8,7 @@ import com.github.lgooddatepicker.components.DatePicker;
 import com.jgoodies.forms.builder.FormBuilder;
 import com.jgoodies.forms.factories.Paddings;
 import com.jgoodies.forms.layout.FormLayout;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -22,6 +24,7 @@ import static javax.swing.JOptionPane.*;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+@Slf4j
 public abstract class CadastroLivroView extends JDialog {
 
     private PainelPesquisa inputISBN;
@@ -39,8 +42,8 @@ public abstract class CadastroLivroView extends JDialog {
     private JButton btnCancelar;
     private JButton btnLimpar;
 
-    private JLabel labelStatus;
     private JProgressBar progressBar;
+    private JButton btnCancelarBusca;
 
     public CadastroLivroView(JFrame parent) {
         super(parent, "Cadastro de Livro", true);
@@ -60,6 +63,11 @@ public abstract class CadastroLivroView extends JDialog {
      * Ação disparada ao clicar no botão {@link #btnSalvar}
      */
     protected abstract void salvar();
+
+    /**
+     * Cancela a ação de busca
+     */
+    protected abstract void cancelarBusca();
 
     /**
      * Evento do botão {@link #btnCancelar}. Serve apenas para fechar a tela
@@ -110,15 +118,11 @@ public abstract class CadastroLivroView extends JDialog {
 
         btnRemoverAutor.setEnabled(false);
 
-        labelStatus = new JLabel("");
+        btnCancelarBusca = criarBotao("Cancelar Busca", e -> cancelarBusca());
         progressBar = new JProgressBar();
         progressBar.setVisible(false);
         progressBar.setStringPainted(true);
-        progressBar.setString("Carregando...");
-
-        for (int i = 0; i < 20; i++) {
-            lstAutores.adicionarAutor("Autor " + (i + 1));
-        }
+        progressBar.setString("Buscando dados do livro...");
     }
 
     /**
@@ -190,7 +194,7 @@ public abstract class CadastroLivroView extends JDialog {
      */
     private JPanel criarPainelBotoes() {
         return FormBuilder.create()
-                .layout(new FormLayout("pref, 5dlu, pref, 10dlu, pref", "pref"))
+                .layout(new FormLayout("pref, 5dlu, pref, 5dlu, pref", "pref"))
                 .add(btnSalvar).xy(1, 1)
                 .add(btnCancelar).xy(3, 1)
                 .add(btnLimpar).xy(5, 1)
@@ -201,8 +205,8 @@ public abstract class CadastroLivroView extends JDialog {
      * Cria painel de status (barra de progresso)
      */
     private JPanel criarPainelStatus() {
-        JPanel painel = new JPanel(new BorderLayout());
-        painel.add(labelStatus, BorderLayout.WEST);
+        JPanel painel = new JPanel(new BorderLayout(10, 10));
+        painel.add(btnCancelarBusca, BorderLayout.WEST);
         painel.add(progressBar, BorderLayout.CENTER);
         return painel;
     }
@@ -234,24 +238,38 @@ public abstract class CadastroLivroView extends JDialog {
 
     private boolean possuiDadoInformado() {
         return isNotBlank(getIsbn())
-               || isNotBlank(getAutor())
-               || isNotBlank(getEditora())
-               || isNotBlank(getTitulo())
-               || nonNull(getDataPublicacao())
-               || !lstAutores.contemItem();
+                || isNotBlank(getAutor())
+                || isNotBlank(getEditora())
+                || isNotBlank(getTitulo())
+                || nonNull(getDataPublicacao())
+                || !lstAutores.contemItem();
     }
 
-    /**
-     * Ação disparada ao clicar em {@link #btnLimpar}
-     */
-    protected final void limparTela() {
-        inputISBN.limparCampo();
+    private void limparTela(boolean limparISBN) {
+        if (limparISBN) {
+            inputISBN.limparCampo();
+        }
+
         inputAutor.setText("");
         inputEditora.setText("");
         inputTitulo.setText("");
         inputDataPublicacao.clear();
 
         lstAutores.limparRegistros();
+    }
+
+    /**
+     * Ação disparada ao clicar em {@link #btnLimpar}. Limpa todos os campos, incluindo o ISBN.
+     */
+    protected final void limparTela() {
+        limparTela(true);
+    }
+
+    /**
+     * Limpa todos os campos exceto o ISBN.
+     */
+    protected final void limparDadosLivro() {
+        limparTela(false);
     }
 
     protected String getIsbn() {
@@ -274,6 +292,54 @@ public abstract class CadastroLivroView extends JDialog {
         return inputDataPublicacao.getDate();
     }
 
+    protected void habilitarCarregamento() {
+        btnCancelarBusca.setVisible(true);
+        progressBar.setVisible(true);
+        progressBar.setIndeterminate(true);
+        habilitarCampos(false);
+    }
+
+    protected void desabilitarCarregamento() {
+        btnCancelarBusca.setVisible(false);
+        progressBar.setVisible(false);
+        progressBar.setValue(0);
+        habilitarCampos(true);
+    }
+
+    protected void preencherDadosLivro(LivroDto livro) {
+        inputTitulo.setText(livro.getTitulo());
+
+        if (nonNull(livro.getEditora())) {
+            inputEditora.setText(livro.getEditora().getNome());
+        }
+
+        if (livro.getDataPublicacao() != null) {
+            inputDataPublicacao.setDate(livro.getDataPublicacao());
+        }
+
+        livro.getAutores().forEach(autor -> lstAutores.adicionarAutor(autor.getNome()));
+    }
+
+    /**
+     * Habilita ou desabilita os inputs/botões, com exceção do botão de cancelar busca. Esse só é habilitado quando tem uma busca em andamento.
+     *
+     * @param habilitar Um boolean que indica o estado dos campos
+     */
+    protected void habilitarCampos(boolean habilitar) {
+        inputISBN.setEnabled(habilitar);
+        inputTitulo.setEnabled(habilitar);
+        inputEditora.setEnabled(habilitar);
+        inputDataPublicacao.setEnabled(habilitar);
+        inputAutor.setEnabled(habilitar);
+
+        btnAdicionarAutor.setEnabled(habilitar);
+        lstAutores.setEnabled(habilitar);
+        btnRemoverAutor.setEnabled(habilitar);
+
+        btnSalvar.setEnabled(habilitar);
+        btnCancelar.setEnabled(habilitar);
+        btnLimpar.setEnabled(habilitar);
+    }
 
 
 }

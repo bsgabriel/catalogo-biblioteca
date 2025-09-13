@@ -17,39 +17,33 @@ public class ListagemController extends ListagemView {
     @Override
     protected void pesquisarLivro(String termo) {
         log.info("buscando pelo livro {}", termo);
-        livroService.buscarPorTermo(termo);
     }
 
     @Override
     protected void adicionarLivro() {
         log.info("Vai abrir tela para cadastro de livro");
-        livroService.salvar(null);
-        CadastroLivroController controller = new CadastroLivroController(this);
+        CadastroLivroController controller = new CadastroLivroController(this, livroService);
         controller.setVisible(true);
     }
 
     @Override
     protected void atualizarListaLivros() {
         log.info("limpa a lista busca os livros novamente");
-        livroService.buscarTodos();
     }
 
     @Override
     protected void editarLivro() {
         log.info("abrir tela de edição (tela de cadastro pré preenchida)");
-        livroService.salvar(null);
     }
 
     @Override
     protected void removerLivro() {
         log.info("remover livro selecionado");
-        livroService.deletar(null);
     }
 
     @Override
     protected void importarArquivo() {
         log.info("importar livro de arquivo");
-        livroService.importarArquivo("");
     }
 
 }

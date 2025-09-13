@@ -1,11 +1,14 @@
 package com.biblioteca.catalogo.ui.controller;
 
 import com.biblioteca.catalogo.dto.LivroDto;
+import com.biblioteca.catalogo.exception.ConsultaLivroException;
 import com.biblioteca.catalogo.service.LivroService;
 import com.biblioteca.catalogo.ui.view.CadastroLivroView;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
+
+import java.util.concurrent.ExecutionException;
 
 import static java.util.Objects.nonNull;
 
@@ -34,7 +37,7 @@ public class CadastroLivroController extends CadastroLivroView {
         buscaWorker = new SwingWorker<LivroDto, Integer>() {
 
             @Override
-            protected LivroDto doInBackground() throws Exception {
+            protected LivroDto doInBackground() throws ConsultaLivroException {
                 return livroService.buscarLivroApi(isbn.trim());
             }
 
@@ -48,8 +51,9 @@ public class CadastroLivroController extends CadastroLivroView {
 
                 try {
                     preencherDadosLivro(get());
-                } catch (Exception e) {
-                    log.error("Erro ao buscar livro", e);
+                } catch (InterruptedException | ExecutionException e) {
+                    log.error("Erro ao buscar livro", e.getCause());
+                    exibirDialogoErro(e.getCause().getMessage());
                 }
             }
         };

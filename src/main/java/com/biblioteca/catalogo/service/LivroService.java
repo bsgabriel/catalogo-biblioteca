@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @Slf4j
 public class LivroService {
 
@@ -37,6 +39,10 @@ public class LivroService {
         } catch (ApiExecutionException e) {
             String msg = String.format("Ocorreu um erro ao buscar dados para o livro %s", isbn);
             throw new ConsultaLivroException(msg, e);
+        }
+
+        if (isNull(livro)) {
+            throw new ConsultaLivroException("Livro não encontrado");
         }
 
         List<AutorResponseDto> autores = livro.getAuthors()

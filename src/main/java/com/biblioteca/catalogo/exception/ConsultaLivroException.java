@@ -6,4 +6,8 @@ public class ConsultaLivroException extends Exception {
         super(message, ex);
     }
 
+    public ConsultaLivroException(String message) {
+        super(message);
+    }
+
 }

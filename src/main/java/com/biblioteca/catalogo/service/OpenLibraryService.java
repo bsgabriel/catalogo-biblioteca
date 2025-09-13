@@ -44,12 +44,12 @@ public class OpenLibraryService {
         }
 
         if (!response.isSuccessful()) {
-            String msg = String.format("%d - %s", response.code(), response.message());
-            throw new ApiExecutionException(msg);
-        }
+            if (response.code() == 404) {
+                return null;
+            }
 
-        if (isNull(response.body())) {
-            throw new ApiExecutionException("Livro não encontrado");
+            String msg = String.format("Consulta retornou código %d", response.code());
+            throw new ApiExecutionException(msg);
         }
 
         return response.body();

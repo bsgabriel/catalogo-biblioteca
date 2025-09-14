@@ -32,7 +32,6 @@ public class Livro {
             joinColumns = @JoinColumn(name = "livro_id"),
             inverseJoinColumns = @JoinColumn(name = "autor_id")
     )
-
     @Builder.Default
     private List<Autor> autores = new ArrayList<>();
 

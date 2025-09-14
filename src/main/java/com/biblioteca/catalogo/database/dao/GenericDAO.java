@@ -105,4 +105,22 @@ public abstract class GenericDAO<T, ID> {
         List<T> results = executeQuery(jpql, parameters);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
+
+    protected <R> List<R> executeQueryForType(Class<R> type, String jpql, Object... parameters) {
+        EntityManager em = databaseManager.getEntityManager();
+        try {
+            TypedQuery<R> query = em.createQuery(jpql, type);
+            for (int i = 0; i < parameters.length; i++) {
+                query.setParameter(i + 1, parameters[i]);
+            }
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    protected <R> Optional<R> executeSingleQueryForType(Class<R> type, String jpql, Object... parameters) {
+        List<R> results = executeQueryForType(type, jpql, parameters);
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+    }
 }

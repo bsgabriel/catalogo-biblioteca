@@ -1,6 +1,6 @@
 package com.biblioteca.catalogo.database.dao;
 
-import com.biblioteca.catalogo.config.DatabaseManager;
+import com.biblioteca.catalogo.database.config.DatabaseManager;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;

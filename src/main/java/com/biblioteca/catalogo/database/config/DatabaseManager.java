@@ -1,4 +1,4 @@
-package com.biblioteca.catalogo.config;
+package com.biblioteca.catalogo.database.config;
 
 import liquibase.Contexts;
 import liquibase.LabelExpression;

@@ -1,6 +1,6 @@
 package com.biblioteca.catalogo;
 
-import com.biblioteca.catalogo.config.DatabaseManager;
+import com.biblioteca.catalogo.database.config.DatabaseManager;
 import com.biblioteca.catalogo.ui.controller.ListagemController;
 import lombok.extern.slf4j.Slf4j;
 

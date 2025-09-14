@@ -1,10 +1,12 @@
 package com.biblioteca.catalogo.ui.factory;
 
+import com.biblioteca.catalogo.ui.components.documentfilter.DocumentFilterCaixaAlta;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import lombok.NoArgsConstructor;
 
 import javax.swing.*;
+import javax.swing.text.AbstractDocument;
 import java.awt.*;
 import java.net.URL;
 import java.time.LocalDate;
@@ -34,12 +36,16 @@ public final class InputFactory {
     /**
      * Cria um input de texto com a seguinte padronização:
      * <br> -Altura: 25px
+     * <br> -Transforma o texto em maiúsculo
      *
      * @return Um {@link JTextField} padrão
      */
     public static JTextField criarInputTexto() {
         JTextField input = new JTextField();
         input.setPreferredSize(new Dimension(0, 25));
+
+        AbstractDocument doc = (AbstractDocument) input.getDocument();
+        doc.setDocumentFilter(new DocumentFilterCaixaAlta());
         return input;
     }
 

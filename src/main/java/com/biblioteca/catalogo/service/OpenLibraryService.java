@@ -5,7 +5,9 @@ import com.biblioteca.catalogo.dto.openlibrary.AutorResponseDto;
 import com.biblioteca.catalogo.dto.openlibrary.KeyDto;
 import com.biblioteca.catalogo.dto.openlibrary.LivroResponseDto;
 import com.biblioteca.catalogo.exception.ApiExecutionException;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import retrofit2.Response;
@@ -13,8 +15,10 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
 public class OpenLibraryService {
@@ -24,7 +28,16 @@ public class OpenLibraryService {
     public OpenLibraryService() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-
+        objectMapper.addHandler(new DeserializationProblemHandler() {
+            @Override
+            public Object handleWeirdStringValue(DeserializationContext ctxt, Class<?> targetType, String valueToConvert, String failureMsg) throws IOException {
+                if (targetType != LocalDate.class || isBlank(valueToConvert)) {
+                    return super.handleWeirdStringValue(ctxt, targetType, valueToConvert, failureMsg);
+                }
+                log.warn("A data '{}' é inválida para o campo '{}'. Atributo será ignorado.", valueToConvert, ctxt.getParser().currentName());
+                return null;
+            }
+        });
         this.openLibraryApi = new Retrofit.Builder()
                 .baseUrl("https://openlibrary.org")
                 .addConverterFactory(JacksonConverterFactory.create(objectMapper))

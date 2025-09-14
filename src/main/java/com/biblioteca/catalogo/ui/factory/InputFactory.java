@@ -1,6 +1,7 @@
 package com.biblioteca.catalogo.ui.factory;
 
 import com.biblioteca.catalogo.ui.components.documentfilter.DocumentFilterCaixaAlta;
+import com.biblioteca.catalogo.ui.components.documentfilter.DocumentFilterNumerico;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import lombok.NoArgsConstructor;
@@ -46,6 +47,21 @@ public final class InputFactory {
 
         AbstractDocument doc = (AbstractDocument) input.getDocument();
         doc.setDocumentFilter(new DocumentFilterCaixaAlta());
+        return input;
+    }
+
+    /**
+     * Cria um campo de texto que só aceita números.
+     * <br> Importante, ele não faz validação de tamanho de número.
+     *
+     * @return Um {@link JTextField} que só aceita números
+     */
+    public static JTextField criarInputNumerico() {
+        JTextField input = new JTextField();
+        input.setPreferredSize(new Dimension(0, 25));
+
+        AbstractDocument doc = (AbstractDocument) input.getDocument();
+        doc.setDocumentFilter(new DocumentFilterNumerico());
         return input;
     }
 

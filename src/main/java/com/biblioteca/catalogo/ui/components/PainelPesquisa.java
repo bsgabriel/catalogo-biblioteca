@@ -29,7 +29,7 @@ public class PainelPesquisa extends JPanel {
      * @param titulo Título que será exibido na borda do painel
      */
     public PainelPesquisa(String titulo) {
-        this(titulo, true);
+        this(titulo, true, false);
     }
 
     /**
@@ -38,14 +38,14 @@ public class PainelPesquisa extends JPanel {
      * @param titulo       Título que será exibido na borda do painel
      * @param exibirLimpar Define se o botão de limpar será exibido ou não
      */
-    public PainelPesquisa(String titulo, boolean exibirLimpar) {
-        inicializarComponentes();
+    public PainelPesquisa(String titulo, boolean exibirLimpar, boolean campoNumerico) {
+        inicializarComponentes(campoNumerico);
         configurarLayout(titulo, exibirLimpar);
         configurarEventos();
     }
 
-    private void inicializarComponentes() {
-        this.campoPesquisa = InputFactory.criarInputTexto();
+    private void inicializarComponentes(boolean campoNumerico) {
+        this.campoPesquisa = campoNumerico ? InputFactory.criarInputNumerico() : InputFactory.criarInputTexto();
         this.botaoPesquisar = new JButton("Pesquisar");
         this.botaoLimparPesquisa = new JButton("Limpar");
     }

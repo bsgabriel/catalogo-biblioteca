@@ -99,7 +99,7 @@ public abstract class CadastroLivroView extends JDialog {
      * Instanciação dos componentes
      */
     private void inicializarComponentes() {
-        inputISBN = new PainelPesquisa("ISBN", false);
+        inputISBN = new PainelPesquisa("ISBN", false, true);
         inputISBN.setOnPesquisar(this::buscarISBN);
 
         inputTitulo = InputFactory.criarInputTexto();
@@ -120,9 +120,9 @@ public abstract class CadastroLivroView extends JDialog {
 
         btnCancelarBusca = criarBotao("Cancelar Busca", e -> cancelarBusca());
         progressBar = new JProgressBar();
-        progressBar.setVisible(false);
         progressBar.setStringPainted(true);
         progressBar.setString("Buscando dados do livro...");
+        desabilitarCarregamento();
     }
 
     /**

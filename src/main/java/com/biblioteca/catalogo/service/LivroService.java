@@ -1,15 +1,19 @@
 package com.biblioteca.catalogo.service;
 
+import com.biblioteca.catalogo.database.dao.LivroDAO;
+import com.biblioteca.catalogo.dto.EditoraDto;
 import com.biblioteca.catalogo.dto.LivroDto;
 import com.biblioteca.catalogo.dto.openlibrary.AutorResponseDto;
 import com.biblioteca.catalogo.dto.openlibrary.LivroResponseDto;
 import com.biblioteca.catalogo.exception.ApiExecutionException;
 import com.biblioteca.catalogo.exception.ConsultaLivroException;
 import com.biblioteca.catalogo.factory.LivroFactory;
+import com.biblioteca.catalogo.mapper.LivroMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -17,12 +21,18 @@ import static java.util.Objects.isNull;
 @Slf4j
 public class LivroService {
 
+    private final LivroDAO livroDAO;
     private final LivroFactory livroFactory;
+    private final AutorService autorService;
+    private final EditoraService editoraService;
     private final OpenLibraryService openLibraryService;
 
     public LivroService() {
         this.livroFactory = new LivroFactory();
         this.openLibraryService = new OpenLibraryService();
+        this.livroDAO = new LivroDAO();
+        this.editoraService = new EditoraService();
+        this.autorService = new AutorService();
     }
 
     /**
@@ -60,5 +70,19 @@ public class LivroService {
                 .collect(Collectors.toList());
 
         return livroFactory.montarLivroDto(isbn, livro, autores);
+    }
+
+    public void salvar(LivroDto livro) {
+        EditoraDto editora = Optional.ofNullable(livro.getEditora())
+                .map(e -> editoraService.buscarOuCriarPorNome(e.getNome()))
+                .orElse(null);
+
+        livro.setEditora(editora);
+        livro.setAutores(livro.getAutores()
+                .stream()
+                .map(autor -> autorService.buscarOuCriarPorNome(autor.getNome()))
+                .collect(Collectors.toList()));
+
+        livroDAO.save(LivroMapper.dtoParaEntidade(livro));
     }
 }

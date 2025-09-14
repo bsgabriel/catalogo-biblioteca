@@ -1,5 +1,6 @@
 package com.biblioteca.catalogo;
 
+import com.biblioteca.catalogo.config.DatabaseManager;
 import com.biblioteca.catalogo.ui.controller.ListagemController;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,7 +10,7 @@ import javax.swing.*;
 public class Launcher {
 
     public static void main(String[] args) {
-        // DatabaseManager.getInstance().inicializarBanco();
+         DatabaseManager.getInstance().inicializarBanco();
 
         SwingUtilities.invokeLater(() -> {
             try {

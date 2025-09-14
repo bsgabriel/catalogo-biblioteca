@@ -5,6 +5,8 @@ import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static java.util.Objects.isNull;
@@ -79,4 +81,9 @@ public class ListaAutores extends JList<AutorDto> {
     public boolean contemItem() {
         return listModel.isEmpty();
     }
+
+    public List<AutorDto> getAutores() {
+        return Collections.list(listModel.elements());
+    }
+
 }

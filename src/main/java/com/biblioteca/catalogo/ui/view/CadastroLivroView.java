@@ -1,5 +1,6 @@
 package com.biblioteca.catalogo.ui.view;
 
+import com.biblioteca.catalogo.dto.AutorDto;
 import com.biblioteca.catalogo.dto.LivroDto;
 import com.biblioteca.catalogo.ui.components.ListaAutores;
 import com.biblioteca.catalogo.ui.components.PainelPesquisa;
@@ -16,6 +17,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
+import java.util.List;
 
 import static com.biblioteca.catalogo.ui.factory.ButtonFactory.criarBotao;
 import static com.biblioteca.catalogo.ui.factory.InputFactory.criarInputTitulo;
@@ -238,7 +240,6 @@ public abstract class CadastroLivroView extends JDialog {
 
     private boolean possuiDadoInformado() {
         return isNotBlank(getIsbn())
-                || isNotBlank(getAutor())
                 || isNotBlank(getEditora())
                 || isNotBlank(getTitulo())
                 || nonNull(getDataPublicacao())
@@ -273,29 +274,30 @@ public abstract class CadastroLivroView extends JDialog {
     }
 
     protected String getIsbn() {
-        return inputISBN.getText();
+        return inputISBN.getText().trim();
     }
 
-    protected String getAutor() {
-        return inputAutor.getText();
+    protected List<AutorDto> getAutores() {
+        return lstAutores.getAutores();
     }
 
     protected String getEditora() {
-        return inputEditora.getText();
+        return inputEditora.getText().trim();
     }
 
     protected String getTitulo() {
-        return inputTitulo.getText();
+        return inputTitulo.getText().trim();
     }
 
     protected LocalDate getDataPublicacao() {
         return inputDataPublicacao.getDate();
     }
 
-    protected void habilitarCarregamento() {
-        btnCancelarBusca.setVisible(true);
+    protected void habilitarCarregamento(String mensagem, boolean permiteCancelar) {
+        btnCancelarBusca.setVisible(permiteCancelar);
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
+        progressBar.setString(mensagem);
         habilitarCampos(false);
     }
 
@@ -343,6 +345,10 @@ public abstract class CadastroLivroView extends JDialog {
 
     protected void exibirDialogoErro(String mensagem) {
         JOptionPane.showMessageDialog(this, mensagem, "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+
+    protected void exibirDialogoSucesso(String mensagem) {
+        JOptionPane.showMessageDialog(this, mensagem, "Sucesso", INFORMATION_MESSAGE);
     }
 
 }

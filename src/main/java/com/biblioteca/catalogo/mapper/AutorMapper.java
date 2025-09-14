@@ -16,6 +16,7 @@ public final class AutorMapper {
 
     public static Autor dtoParaEntidade(AutorDto dto) {
         return Autor.builder()
+                .autorId(dto.getAutorId())
                 .nome(dto.getNome())
                 .build();
     }

@@ -51,32 +51,7 @@ public class CadastroLivroController extends CadastroLivroView {
         }
 
         limparDadosLivro();
-        buscaWorker = new SwingWorker<LivroDto, Integer>() {
-
-            @Override
-            protected LivroDto doInBackground() throws ConsultaLivroException {
-                return livroService.buscarLivroApi(isbn.trim());
-            }
-
-            @Override
-            protected void done() {
-                desabilitarCarregamento();
-
-                if (isCancelled()) {
-                    return;
-                }
-
-                try {
-                    preencherDadosLivro(get());
-                } catch (ExecutionException e) {
-                    log.error("Erro ao buscar livro", e.getCause());
-                    exibirDialogoErro(e.getCause().getMessage());
-                } catch (InterruptedException e) {
-                    log.error("Erro ao buscar livro", e);
-                    exibirDialogoErro("Ocorreu um erro inesperado ao consultar o livro");
-                }
-            }
-        };
+        buscaWorker = criarConsultaApiWorker(isbn);
 
         habilitarCarregamento("Buscando livro...", true);
         buscaWorker.execute();
@@ -112,10 +87,34 @@ public class CadastroLivroController extends CadastroLivroView {
                                 .build())
                         .build());
 
-        cadastroWorker = new SwingWorker<Void, Void>() {
+        cadastroWorker = criarWorkerCadastro(livro);
+
+        habilitarCarregamento("Salvando dados", false);
+        cadastroWorker.execute();
+
+    }
+
+    @Override
+    protected void cancelarBusca() {
+        if (nonNull(buscaWorker)) {
+            buscaWorker.cancel(true);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (buscaWorker != null && !buscaWorker.isDone()) {
+            buscaWorker.cancel(true);
+        }
+
+        super.dispose();
+    }
+
+    private SwingWorker<Void, Void> criarWorkerCadastro(LivroDto livro) {
+        return new SwingWorker<Void, Void>() {
 
             @Override
-            protected Void doInBackground() throws ConsultaLivroException {
+            protected Void doInBackground() {
                 livroService.salvar(livro);
                 return null;
             }
@@ -137,25 +136,34 @@ public class CadastroLivroController extends CadastroLivroView {
                 }
             }
         };
-
-        habilitarCarregamento("Salvando dados", false);
-        cadastroWorker.execute();
-
     }
 
-    @Override
-    protected void cancelarBusca() {
-        if (nonNull(buscaWorker)) {
-            buscaWorker.cancel(true);
-        }
-    }
+    private SwingWorker<LivroDto, Integer> criarConsultaApiWorker(String isbn) {
+        return new SwingWorker<LivroDto, Integer>() {
 
-    @Override
-    public void dispose() {
-        if (buscaWorker != null && !buscaWorker.isDone()) {
-            buscaWorker.cancel(true);
-        }
+            @Override
+            protected LivroDto doInBackground() throws ConsultaLivroException {
+                return livroService.buscarLivroApi(isbn.trim());
+            }
 
-        super.dispose();
+            @Override
+            protected void done() {
+                desabilitarCarregamento();
+
+                if (isCancelled()) {
+                    return;
+                }
+
+                try {
+                    preencherDadosLivro(get());
+                } catch (ExecutionException e) {
+                    log.error("Erro ao buscar livro", e.getCause());
+                    exibirDialogoErro(e.getCause().getMessage());
+                } catch (InterruptedException e) {
+                    log.error("Erro ao buscar livro", e);
+                    exibirDialogoErro("Ocorreu um erro inesperado ao consultar o livro");
+                }
+            }
+        };
     }
 }

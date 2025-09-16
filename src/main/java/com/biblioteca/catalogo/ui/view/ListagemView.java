@@ -12,6 +12,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 import static com.biblioteca.catalogo.ui.factory.ButtonFactory.criarBotao;
+import static java.util.Objects.nonNull;
 
 public abstract class ListagemView extends JFrame {
 
@@ -22,9 +23,16 @@ public abstract class ListagemView extends JFrame {
     private JButton botaoDeletar;
     private JButton botaoImportar;
 
+    private JLabel labelStatus;
     private JProgressBar progressBar;
 
     private PainelPesquisa painelPesquisa;
+
+    public ListagemView() {
+        inicializarComponentes();
+        criarPainelPrincipal();
+        configurarTela();
+    }
 
     /**
      * Efetua a consulta de um livro
@@ -41,12 +49,12 @@ public abstract class ListagemView extends JFrame {
     /**
      * Abre a tela de edição de livro
      */
-    protected abstract void editarLivro();
+    protected abstract void editarLivro(LivroDto livroDto);
 
     /**
      * Exclui o livro selecionado
      */
-    protected abstract void removerLivro();
+    protected abstract void removerLivro(LivroDto livroDto);
 
     /**
      * Abre a tela para importação de arquivo
@@ -57,13 +65,6 @@ public abstract class ListagemView extends JFrame {
      * Atualiza a lista de livros (remove e busca novamente)
      */
     protected abstract void atualizarListaLivros();
-
-    public ListagemView() {
-        inicializarComponentes();
-        criarPainelPrincipal();
-        configurarTela();
-        atualizarListaLivros();
-    }
 
     /**
      * Configuração geral da tela (tamanho, título, etc)
@@ -83,10 +84,17 @@ public abstract class ListagemView extends JFrame {
         tabelaLivros = new TabelaLivros();
 
         botaoIncluir = criarBotao("Incluir", e -> adicionarLivro());
-        botaoEditar = criarBotao("Editar", e -> editarLivro());
-        botaoDeletar = criarBotao("Deletar", e -> removerLivro());
+        botaoEditar = criarBotao("Editar", e -> editarLivro(tabelaLivros.getLivroSelecionado()));
+        botaoDeletar = criarBotao("Deletar", e -> removerLivro(tabelaLivros.getLivroSelecionado()));
         botaoImportar = criarBotao("Importar Arquivo", e -> importarArquivo());
 
+        tabelaLivros.setOnSelecaoAlterada(livro -> {
+            boolean possuiSelecao = nonNull(livro);
+            botaoEditar.setEnabled(possuiSelecao);
+            botaoDeletar.setEnabled(possuiSelecao);
+        });
+
+        labelStatus = new JLabel("");
         progressBar = new JProgressBar();
         progressBar.setVisible(false);
         progressBar.setStringPainted(true);
@@ -148,8 +156,9 @@ public abstract class ListagemView extends JFrame {
      */
     private JPanel criarPainelStatus() {
         return FormBuilder.create()
-                .layout(new FormLayout("fill:pref:grow", "pref"))
-                .add(progressBar).xy(1, 1)
+                .layout(new FormLayout("pref, 4dlu, fill:pref:grow", "pref"))
+                .add(labelStatus).xy(1, 1)
+                .add(progressBar).xy(3, 1)
                 .build();
     }
 
@@ -178,8 +187,8 @@ public abstract class ListagemView extends JFrame {
     protected void habilitarCampos(boolean habilitar) {
         tabelaLivros.setEnabled(habilitar);
         botaoIncluir.setEnabled(habilitar);
-        botaoEditar.setEnabled(habilitar);
-        botaoDeletar.setEnabled(habilitar);
+        botaoEditar.setEnabled(habilitar && nonNull(tabelaLivros.getLivroSelecionado()));
+        botaoDeletar.setEnabled(habilitar && nonNull(tabelaLivros.getLivroSelecionado()));
         botaoImportar.setEnabled(habilitar);
         painelPesquisa.setEnabled(habilitar);
     }
@@ -218,8 +227,25 @@ public abstract class ListagemView extends JFrame {
         exibirMensagem(titulo, mensagem, JOptionPane.WARNING_MESSAGE);
     }
 
+    /**
+     * Altera o texto em {@link #labelStatus}
+     *
+     * @param msg Mensagem a ser exibida
+     */
+    protected void atualizarStatus(String msg) {
+        labelStatus.setText(msg);
+    }
+
     protected void adicionarLivroTabela(LivroDto livroDto) {
         tabelaLivros.adicionarRegistro(livroDto);
+    }
+
+    /**
+     * Limpa a tabela e o campo de pesquisa
+     */
+    protected void limparTela() {
+        painelPesquisa.limparCampo();
+        tabelaLivros.limparRegistros();
     }
 
 

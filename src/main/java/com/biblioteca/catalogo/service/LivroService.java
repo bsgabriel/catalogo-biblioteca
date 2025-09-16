@@ -127,4 +127,10 @@ public class LivroService {
         return livroCsvService.processarCSV(file);
     }
 
+    public List<LivroDto> buscarTodos() {
+        return livroDAO.buscarTodos()
+                .stream()
+                .map(LivroMapper::entidadeParaDto)
+                .collect(Collectors.toList());
+    }
 }

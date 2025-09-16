@@ -28,6 +28,22 @@ public final class LivroMapper {
                 .build();
     }
 
+    public static LivroDto entidadeParaDto(Livro entidade) {
+        return LivroDto.builder()
+                .livroId(entidade.getLivroId())
+                .isbn(entidade.getIsbn())
+                .titulo(entidade.getTitulo())
+                .dataPublicacao(entidade.getDataPublicacao())
+                .editora(Optional.ofNullable(entidade.getEditora())
+                        .map(EditoraMapper::entidadeParaDto)
+                        .orElse(null))
+                .autores(entidade.getAutores()
+                        .stream()
+                        .map(AutorMapper::entidadeParaDto)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
     public static LivroDto arrayToLivroDto(Object[] dadosLivro) {
         int idx = 0;
 

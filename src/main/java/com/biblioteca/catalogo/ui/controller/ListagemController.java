@@ -1,6 +1,7 @@
 package com.biblioteca.catalogo.ui.controller;
 
 import com.biblioteca.catalogo.dto.DadosImportacaoCsvDto;
+import com.biblioteca.catalogo.dto.LivroDto;
 import com.biblioteca.catalogo.service.LivroService;
 import com.biblioteca.catalogo.ui.view.ListagemView;
 import lombok.extern.slf4j.Slf4j;
@@ -8,20 +9,25 @@ import lombok.extern.slf4j.Slf4j;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
 public class ListagemController extends ListagemView {
 
     private final LivroService livroService;
     private SwingWorker<DadosImportacaoCsvDto, Void> workerImportacaoCsv;
+    private SwingWorker<List<LivroDto>, Void> workerBuscaLivro;
 
     public ListagemController() {
         super();
         this.livroService = new LivroService();
+        atualizarListaLivros();
     }
 
     @Override
@@ -38,7 +44,7 @@ public class ListagemController extends ListagemView {
 
     @Override
     protected void atualizarListaLivros() {
-        log.info("limpa a lista busca os livros novamente");
+        buscarLivro("");
     }
 
     @Override
@@ -72,6 +78,17 @@ public class ListagemController extends ListagemView {
         workerImportacaoCsv = criarWorkerProcessamentoCsv(arquivo);
         habilitarCarregamento("Importando livros");
         workerImportacaoCsv.execute();
+    }
+
+    private void buscarLivro(String termo) {
+        if (nonNull(workerBuscaLivro) && !workerBuscaLivro.isDone()) {
+            workerBuscaLivro.cancel(true);
+        }
+
+        String msg = isBlank(termo) ? "Carregando livros" : String.format("Buscando por: %s", termo);
+        habilitarCarregamento(msg);
+        workerBuscaLivro = criarWorkerConsultaLivro(termo);
+        workerBuscaLivro.execute();
     }
 
     private SwingWorker<DadosImportacaoCsvDto, Void> criarWorkerProcessamentoCsv(File arquivo) {
@@ -129,6 +146,44 @@ public class ListagemController extends ListagemView {
                 sb.append("Erros:\n");
                 dadosImportacao.getErros().forEach(e -> sb.append("- ").append(e).append("\n"));
                 exibirMensagemAviso(titulo, sb.toString());
+            }
+        };
+    }
+
+    private SwingWorker<List<LivroDto>, Void> criarWorkerConsultaLivro(String termo) {
+        return new SwingWorker<List<LivroDto>, Void>() {
+            @Override
+            protected List<LivroDto> doInBackground() {
+                if (isBlank(termo)) {
+                    log.info("Nenhum termo informado. Buscando todos os livros");
+                    return livroService.buscarTodos();
+                } else {
+                    log.info("Buscando livros pelo termo '{}'", termo);
+                    return new ArrayList<>();
+                }
+            }
+
+            @Override
+            protected void done() {
+                limparTela();
+                desabilitarCarregamento();
+
+                List<LivroDto> livros;
+                try {
+                    livros = get();
+                } catch (Exception e) {
+                    log.error("Erro ao buscar livros", e);
+                    exibirMensagemErro("Erro", "Ocorreu um erro ao buscar livros");
+                    return;
+                }
+
+                if (livros.isEmpty()) {
+                    atualizarStatus("Nenhum livro encontrado");
+                    return;
+                }
+
+                livros.forEach(livro -> adicionarLivroTabela(livro));
+                atualizarStatus(String.format("Foram encontrados %d registro(s)", livros.size()));
             }
         };
     }

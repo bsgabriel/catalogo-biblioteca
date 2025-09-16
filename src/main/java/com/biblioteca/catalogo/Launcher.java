@@ -10,7 +10,13 @@ import javax.swing.*;
 public class Launcher {
 
     public static void main(String[] args) {
-         DatabaseManager.getInstance().inicializarBanco();
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            log.error("Não foi possível setar o tema da aplicação. Será usado o tema padrão", e);
+        }
+
+        DatabaseManager.getInstance().inicializarBanco();
 
         SwingUtilities.invokeLater(() -> {
             try {

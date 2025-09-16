@@ -163,23 +163,6 @@ public abstract class ListagemView extends JFrame {
     }
 
     /**
-     * Exibe uma mensagem num JTextArea
-     *
-     * @param titulo   Título da mensagem
-     * @param mensagem Mensagem a ser exibida
-     * @param tipo     Tipo da mensagem
-     */
-    private void exibirMensagem(String titulo, String mensagem, int tipo) {
-        JTextArea area = new JTextArea(mensagem);
-        area.setMargin(new Insets(15, 15, 15, 15));
-        area.setEditable(false);
-
-        JScrollPane scrollPane = new JScrollPane(area);
-        scrollPane.setPreferredSize(new Dimension(550, 500));
-        JOptionPane.showMessageDialog(this, scrollPane, titulo, tipo);
-    }
-
-    /**
      * Habilita ou desabilita os componentes.
      *
      * @param habilitar Um boolean que indica o estado dos campos
@@ -213,18 +196,6 @@ public abstract class ListagemView extends JFrame {
         progressBar.setIndeterminate(false);
         progressBar.setVisible(false);
         habilitarCampos(true);
-    }
-
-    protected void exibirMensagemErro(String titulo, String mensagem) {
-        exibirMensagem(titulo, mensagem, JOptionPane.ERROR_MESSAGE);
-    }
-
-    protected void exibirMensagemInformativo(String titulo, String mensagem) {
-        exibirMensagem(titulo, mensagem, JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    protected void exibirMensagemAviso(String titulo, String mensagem) {
-        exibirMensagem(titulo, mensagem, JOptionPane.WARNING_MESSAGE);
     }
 
     /**

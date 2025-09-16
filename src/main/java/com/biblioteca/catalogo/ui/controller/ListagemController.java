@@ -3,6 +3,7 @@ package com.biblioteca.catalogo.ui.controller;
 import com.biblioteca.catalogo.dto.DadosImportacaoCsvDto;
 import com.biblioteca.catalogo.dto.LivroDto;
 import com.biblioteca.catalogo.service.LivroService;
+import com.biblioteca.catalogo.ui.helper.DialogHelper;
 import com.biblioteca.catalogo.ui.view.ListagemView;
 import lombok.extern.slf4j.Slf4j;
 
@@ -109,14 +110,14 @@ public class ListagemController extends ListagemView {
                     dadosImportacao = Optional.ofNullable(get()).orElse(DadosImportacaoCsvDto.builder().build());
                 } catch (Exception e) {
                     log.error("Erro ao realizar importação", e);
-                    exibirMensagemErro("Erro", "Ocorreu um erro ao realizar a importação. Verifique o log para mais detalhes");
+                    DialogHelper.exibirErro(ListagemController.this, "Erro", "Ocorreu um erro ao realizar a importação. Verifique o log para mais detalhes");
                     return;
                 }
 
                 StringBuilder sb = new StringBuilder();
                 if (dadosImportacao.getTotalLinhas() == 0) {
                     sb.append("Nenhum livro importado");
-                    exibirMensagemAviso("Aviso", sb.toString());
+                    DialogHelper.exibirAviso(ListagemController.this, sb.toString());
                     return;
                 }
 
@@ -128,7 +129,7 @@ public class ListagemController extends ListagemView {
                 if (qtdSucesso > 0 && qtdErro == 0) {
                     sb.append("Livros importados com sucesso: ").append(qtdSucesso).append("\n");
                     sb.append("Nenhum livro com erro\n");
-                    exibirMensagemInformativo(titulo, sb.toString());
+                    DialogHelper.exibirAvisoDetalhado(ListagemController.this, titulo, sb.toString());
                     return;
                 }
 
@@ -136,7 +137,7 @@ public class ListagemController extends ListagemView {
                 if (qtdSucesso == 0 && qtdErro > 0) {
                     sb.append("Nenhum livro pôde ser importado devido à erros na importação:\n");
                     dadosImportacao.getErros().forEach(e -> sb.append("- ").append(e).append("\n"));
-                    exibirMensagemErro(titulo, sb.toString());
+                    DialogHelper.exibirErroDetalhado(ListagemController.this, titulo, sb.toString());
                     return;
                 }
 
@@ -145,7 +146,7 @@ public class ListagemController extends ListagemView {
                 sb.append("Livros com erro de importação: ").append(qtdErro).append("\n\n");
                 sb.append("Erros:\n");
                 dadosImportacao.getErros().forEach(e -> sb.append("- ").append(e).append("\n"));
-                exibirMensagemAviso(titulo, sb.toString());
+                DialogHelper.exibirAlertaDetalhado(ListagemController.this, titulo, sb.toString());
             }
         };
     }
@@ -173,7 +174,7 @@ public class ListagemController extends ListagemView {
                     livros = get();
                 } catch (Exception e) {
                     log.error("Erro ao buscar livros", e);
-                    exibirMensagemErro("Erro", "Ocorreu um erro ao buscar livros");
+                    DialogHelper.exibirErro(ListagemController.this, "Ocorreu um erro ao buscar livros");
                     return;
                 }
 

@@ -343,13 +343,5 @@ public abstract class CadastroLivroView extends JDialog {
         btnLimpar.setEnabled(habilitar);
     }
 
-    protected void exibirDialogoErro(String mensagem) {
-        JOptionPane.showMessageDialog(this, mensagem, "Erro", JOptionPane.ERROR_MESSAGE);
-    }
-
-    protected void exibirDialogoSucesso(String mensagem) {
-        JOptionPane.showMessageDialog(this, mensagem, "Sucesso", INFORMATION_MESSAGE);
-    }
-
 }
 

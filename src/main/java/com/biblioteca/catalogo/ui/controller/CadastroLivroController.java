@@ -4,6 +4,7 @@ import com.biblioteca.catalogo.dto.EditoraDto;
 import com.biblioteca.catalogo.dto.LivroDto;
 import com.biblioteca.catalogo.exception.ConsultaLivroException;
 import com.biblioteca.catalogo.service.LivroService;
+import com.biblioteca.catalogo.ui.helper.DialogHelper;
 import com.biblioteca.catalogo.ui.view.CadastroLivroView;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -125,14 +126,14 @@ public class CadastroLivroController extends CadastroLivroView {
 
                 try {
                     get();
-                    exibirDialogoSucesso("Livro salvo com sucesso!");
+                    DialogHelper.exibirAviso(CadastroLivroController.this, "Sucesso", "Livro salvo com sucesso!");
                     limparTela();
                 } catch (ExecutionException e) {
                     log.error("Erro ao buscar livro", e.getCause());
-                    exibirDialogoErro(e.getCause().getMessage());
+                    DialogHelper.exibirErro(CadastroLivroController.this, e.getCause().getMessage());
                 } catch (InterruptedException e) {
                     log.error("Erro ao buscar livro", e);
-                    exibirDialogoErro("Ocorreu um erro inesperado ao salvar o livro");
+                    DialogHelper.exibirErro(CadastroLivroController.this, "Ocorreu um erro inesperado ao salvar o livro");
                 }
             }
         };
@@ -158,10 +159,10 @@ public class CadastroLivroController extends CadastroLivroView {
                     preencherDadosLivro(get());
                 } catch (ExecutionException e) {
                     log.error("Erro ao buscar livro", e.getCause());
-                    exibirDialogoErro(e.getCause().getMessage());
+                    DialogHelper.exibirErro(CadastroLivroController.this, e.getCause().getMessage());
                 } catch (InterruptedException e) {
                     log.error("Erro ao buscar livro", e);
-                    exibirDialogoErro("Ocorreu um erro inesperado ao consultar o livro");
+                    DialogHelper.exibirErro(CadastroLivroController.this, "Ocorreu um erro inesperado ao consultar o livro");
                 }
             }
         };

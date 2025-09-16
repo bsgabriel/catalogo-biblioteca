@@ -17,6 +17,7 @@ public final class LivroMapper {
                 .livroId(dto.getLivroId())
                 .titulo(dto.getTitulo())
                 .isbn(dto.getIsbn())
+                .dataPublicacao(dto.getDataPublicacao())
                 .editora(Optional.ofNullable(dto.getEditora())
                         .map(EditoraMapper::dtoParaEntidade)
                         .orElse(null))

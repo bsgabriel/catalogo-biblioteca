@@ -1,5 +1,6 @@
 package com.biblioteca.catalogo.ui.view;
 
+import com.biblioteca.catalogo.dto.LivroDto;
 import com.biblioteca.catalogo.ui.components.PainelPesquisa;
 import com.biblioteca.catalogo.ui.components.TabelaLivros;
 import com.jgoodies.forms.builder.FormBuilder;
@@ -21,7 +22,6 @@ public abstract class ListagemView extends JFrame {
     private JButton botaoDeletar;
     private JButton botaoImportar;
 
-    private JLabel labelStatus;
     private JProgressBar progressBar;
 
     private PainelPesquisa painelPesquisa;
@@ -62,6 +62,7 @@ public abstract class ListagemView extends JFrame {
         inicializarComponentes();
         criarPainelPrincipal();
         configurarTela();
+        atualizarListaLivros();
     }
 
     /**
@@ -86,7 +87,6 @@ public abstract class ListagemView extends JFrame {
         botaoDeletar = criarBotao("Deletar", e -> removerLivro());
         botaoImportar = criarBotao("Importar Arquivo", e -> importarArquivo());
 
-        labelStatus = new JLabel("Pronto");
         progressBar = new JProgressBar();
         progressBar.setVisible(false);
         progressBar.setStringPainted(true);
@@ -148,10 +148,79 @@ public abstract class ListagemView extends JFrame {
      */
     private JPanel criarPainelStatus() {
         return FormBuilder.create()
-                .layout(new FormLayout("pref, 4dlu, fill:pref:grow", "pref"))
-                .add(labelStatus).xy(1, 1)
-                .add(progressBar).xy(3, 1)
+                .layout(new FormLayout("fill:pref:grow", "pref"))
+                .add(progressBar).xy(1, 1)
                 .build();
     }
+
+    /**
+     * Exibe uma mensagem num JTextArea
+     *
+     * @param titulo   Título da mensagem
+     * @param mensagem Mensagem a ser exibida
+     * @param tipo     Tipo da mensagem
+     */
+    private void exibirMensagem(String titulo, String mensagem, int tipo) {
+        JTextArea area = new JTextArea(mensagem);
+        area.setMargin(new Insets(15, 15, 15, 15));
+        area.setEditable(false);
+
+        JScrollPane scrollPane = new JScrollPane(area);
+        scrollPane.setPreferredSize(new Dimension(550, 500));
+        JOptionPane.showMessageDialog(this, scrollPane, titulo, tipo);
+    }
+
+    /**
+     * Habilita ou desabilita os componentes.
+     *
+     * @param habilitar Um boolean que indica o estado dos campos
+     */
+    protected void habilitarCampos(boolean habilitar) {
+        tabelaLivros.setEnabled(habilitar);
+        botaoIncluir.setEnabled(habilitar);
+        botaoEditar.setEnabled(habilitar);
+        botaoDeletar.setEnabled(habilitar);
+        botaoImportar.setEnabled(habilitar);
+        painelPesquisa.setEnabled(habilitar);
+    }
+
+    /**
+     * Exibe a barra de carregamento com uma mensagem informativa e desabilita os campos em tela
+     *
+     * @param mensagem Uma {@link String} que será exibida no carregamento
+     */
+    protected void habilitarCarregamento(String mensagem) {
+        progressBar.setString(mensagem);
+        progressBar.setIndeterminate(true);
+        progressBar.setVisible(true);
+        habilitarCampos(false);
+    }
+
+    /**
+     * Esconde a barra de carregamento, habilitando os campos em tela
+     */
+    protected void desabilitarCarregamento() {
+        progressBar.setString("");
+        progressBar.setIndeterminate(false);
+        progressBar.setVisible(false);
+        habilitarCampos(true);
+    }
+
+    protected void exibirMensagemErro(String titulo, String mensagem) {
+        exibirMensagem(titulo, mensagem, JOptionPane.ERROR_MESSAGE);
+    }
+
+    protected void exibirMensagemInformativo(String titulo, String mensagem) {
+        exibirMensagem(titulo, mensagem, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    protected void exibirMensagemAviso(String titulo, String mensagem) {
+        exibirMensagem(titulo, mensagem, JOptionPane.WARNING_MESSAGE);
+    }
+
+    protected void adicionarLivroTabela(LivroDto livroDto) {
+        tabelaLivros.adicionarRegistro(livroDto);
+    }
+
 
 }

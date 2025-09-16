@@ -2,6 +2,7 @@ package com.biblioteca.catalogo.service;
 
 import com.biblioteca.catalogo.database.dao.LivroDAO;
 import com.biblioteca.catalogo.dto.EditoraDto;
+import com.biblioteca.catalogo.dto.DadosImportacaoCsvDto;
 import com.biblioteca.catalogo.dto.LivroDto;
 import com.biblioteca.catalogo.dto.openlibrary.AutorResponseDto;
 import com.biblioteca.catalogo.dto.openlibrary.LivroResponseDto;
@@ -11,6 +12,7 @@ import com.biblioteca.catalogo.factory.LivroFactory;
 import com.biblioteca.catalogo.mapper.LivroMapper;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,6 +28,7 @@ public class LivroService {
     private final LivroFactory livroFactory;
     private final AutorService autorService;
     private final EditoraService editoraService;
+    private final LivroCsvService livroCsvService;
     private final OpenLibraryService openLibraryService;
 
     public LivroService() {
@@ -34,6 +37,7 @@ public class LivroService {
         this.livroDAO = new LivroDAO();
         this.editoraService = new EditoraService();
         this.autorService = new AutorService();
+        this.livroCsvService = new LivroCsvService();
     }
 
     /**
@@ -111,6 +115,16 @@ public class LivroService {
      */
     public Long buscarIdExistentePorISBN(Long isbn) {
         return livroDAO.buscarIdExistentePorISBN(isbn).orElse(null);
+    }
+
+    /**
+     * Realiza a importação de dados de um CSV
+     *
+     * @param file Arquivo CSV com dados para processar.
+     * @return Um {@link DadosImportacaoCsvDto} com dados sobre a importação
+     */
+    public DadosImportacaoCsvDto carregarDadosCSV(File file) {
+        return livroCsvService.processarCSV(file);
     }
 
 }

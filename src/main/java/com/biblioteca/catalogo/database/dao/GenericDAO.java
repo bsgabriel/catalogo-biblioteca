@@ -1,15 +1,20 @@
 package com.biblioteca.catalogo.database.dao;
 
 import com.biblioteca.catalogo.database.config.DatabaseManager;
+import com.biblioteca.catalogo.database.dto.Join;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public abstract class GenericDAO<T, ID> {
 
@@ -51,12 +56,26 @@ public abstract class GenericDAO<T, ID> {
         }
     }
 
-    public List<T> findAll() {
+    public List<T> findAll(Join... joins) {
         EntityManager em = databaseManager.getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> query = cb.createQuery(entityClass);
             Root<T> root = query.from(entityClass);
+
+            if (joins.length > 0) {
+                boolean possuiJoin = false;
+                for (Join join : joins) {
+                    if (isBlank(join.getColuna())) {
+                        continue;
+                    }
+                    root.fetch(join.getColuna(), join.getTipo());
+                    possuiJoin = true;
+                }
+                query.distinct(possuiJoin);
+            }
+
+
             query.select(root);
 
             return em.createQuery(query).getResultList();

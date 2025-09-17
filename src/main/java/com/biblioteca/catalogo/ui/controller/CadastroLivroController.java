@@ -54,7 +54,10 @@ public class CadastroLivroController extends CadastroLivroView {
         this.livroService = livroService;
         this.handleCadastro = handleCadastro;
         this.livroEdicao = livroEdicao;
-        preencherDadosLivro(livroEdicao);
+
+        if (nonNull(livroEdicao)) {
+            preencherDadosLivro(livroEdicao);
+        }
     }
 
     @Override

@@ -104,7 +104,18 @@ public abstract class GenericDAO<T, ID> {
     }
 
     public void deleteById(ID id) {
-        findById(id).ifPresent(this::delete);
+        EntityManager em = databaseManager.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            T entity = em.getReference(entityClass, id);
+            em.remove(entity);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
     }
 
     protected List<T> executeQuery(String jpql, Object... parameters) {

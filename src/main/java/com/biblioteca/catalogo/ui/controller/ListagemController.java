@@ -10,13 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 public class ListagemController extends ListagemView {
@@ -34,6 +34,10 @@ public class ListagemController extends ListagemView {
 
     @Override
     protected void pesquisarLivro(String termo) {
+        if (isBlank(termo)) {
+            return;
+        }
+
         buscarLivro(termo);
     }
 
@@ -45,6 +49,7 @@ public class ListagemController extends ListagemView {
 
     @Override
     protected void atualizarListaLivros() {
+        limparCampoPesquisa();
         buscarLivro("");
     }
 
@@ -176,7 +181,8 @@ public class ListagemController extends ListagemView {
 
             @Override
             protected void done() {
-                limparTela();
+                setResultadoFiltrado(isNotBlank(termo));
+                limparTabela();
                 desabilitarCarregamento();
 
                 List<LivroDto> livros;

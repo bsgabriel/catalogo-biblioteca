@@ -31,6 +31,8 @@ public abstract class ListagemView extends JFrame {
 
     private PainelPesquisa painelPesquisa;
 
+    private boolean resultadoFiltrado;
+
     public ListagemView() {
         inicializarComponentes();
         criarPainelPrincipal();
@@ -127,6 +129,12 @@ public abstract class ListagemView extends JFrame {
 
         painelPesquisa = new PainelPesquisa("Pesquisar Livros");
         painelPesquisa.setOnPesquisar(this::pesquisarLivro);
+        painelPesquisa.setOnLimpar(() -> {
+            if (resultadoFiltrado) {
+                setResultadoFiltrado(false);
+                atualizarListaLivros();
+            }
+        });
     }
 
     /**
@@ -236,12 +244,16 @@ public abstract class ListagemView extends JFrame {
         tabelaLivros.adicionarRegistro(livroDto);
     }
 
-    /**
-     * Limpa a tabela e o campo de pesquisa
-     */
-    protected void limparTela() {
-        painelPesquisa.limparCampo();
+    protected void limparTabela() {
         tabelaLivros.limparRegistros();
+    }
+
+    protected void limparCampoPesquisa() {
+        painelPesquisa.setText("");
+    }
+
+    protected void setResultadoFiltrado(boolean aplicouFiltro) {
+        resultadoFiltrado = aplicouFiltro;
     }
 
     private boolean confirmarExclusao() {

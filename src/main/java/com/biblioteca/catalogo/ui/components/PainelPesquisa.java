@@ -10,6 +10,7 @@ import javax.swing.border.TitledBorder;
 import java.util.function.Consumer;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 /**
  * Painel com campo de pesquisa, com botões de buscar e limpar
@@ -22,6 +23,9 @@ public class PainelPesquisa extends JPanel {
 
     @Setter
     private Consumer<String> onPesquisar;
+
+    @Setter
+    private Runnable onLimpar;
 
     /**
      * Gera um painel de pesquisa com o botão de limpar sendo exibido
@@ -80,9 +84,13 @@ public class PainelPesquisa extends JPanel {
         onPesquisar.accept(campoPesquisa.getText().trim());
     }
 
-    public void limparCampo() {
+    private void limparCampo() {
         campoPesquisa.setText("");
         campoPesquisa.requestFocus();
+
+        if (nonNull(onLimpar)) {
+            onLimpar.run();
+        }
     }
 
     /**

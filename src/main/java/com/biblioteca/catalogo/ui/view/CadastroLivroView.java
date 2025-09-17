@@ -249,7 +249,7 @@ public abstract class CadastroLivroView extends JDialog {
 
     private void limparTela(boolean limparISBN) {
         if (limparISBN) {
-            inputISBN.limparCampo();
+            inputISBN.setText("");
         }
 
         inputAutor.setText("");

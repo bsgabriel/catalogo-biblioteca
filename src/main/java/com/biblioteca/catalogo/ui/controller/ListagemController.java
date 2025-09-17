@@ -24,6 +24,7 @@ public class ListagemController extends ListagemView {
     private final LivroService livroService;
     private SwingWorker<DadosImportacaoCsvDto, Void> workerImportacaoCsv;
     private SwingWorker<List<LivroDto>, Void> workerBuscaLivro;
+    private SwingWorker<Void, Void> workerRemocaoLivro;
 
     public ListagemController() {
         super();
@@ -49,13 +50,23 @@ public class ListagemController extends ListagemView {
     }
 
     @Override
-    protected void editarLivro() {
+    protected void editarLivro(LivroDto livroDto) {
+        if (isNull(livroDto)) {
+            DialogHelper.exibirAlerta(this, "Nenhum livro selecionado");
+            return;
+        }
         log.info("abrir tela de edição (tela de cadastro pré preenchida)");
     }
 
     @Override
-    protected void removerLivro() {
-        log.info("remover livro selecionado");
+    protected void removerLivro(LivroDto livroDto) {
+        if (nonNull(workerRemocaoLivro) && !workerRemocaoLivro.isDone()) {
+            workerRemocaoLivro.cancel(true);
+        }
+
+        workerRemocaoLivro = criarWorkerRemocaoLivro(livroDto);
+        habilitarCarregamento("Deletando livro");
+        workerRemocaoLivro.execute();
     }
 
     @Override
@@ -184,10 +195,34 @@ public class ListagemController extends ListagemView {
                 }
 
                 livros.forEach(livro -> adicionarLivroTabela(livro));
-                atualizarStatus(String.format("Foram encontrados %d registro(s)", livros.size()));
+                atualizarStatus(String.format("Quantidade de livros: %d", livros.size()));
             }
         };
     }
 
+    private SwingWorker<Void, Void> criarWorkerRemocaoLivro(LivroDto livroDto) {
+        return new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() {
+                livroService.deletarLivro(livroDto);
+                return null;
+            }
 
+            @Override
+            protected void done() {
+                desabilitarCarregamento();
+
+                try {
+                    get();
+                } catch (Exception e) {
+                    log.error("Erro ao executar remoção", e);
+                    DialogHelper.exibirErro(ListagemController.this, "Ocorreu um erro ao remover o livro. Verifique o log para mais detalhes");
+                    return;
+                }
+
+                atualizarListaLivros();
+                DialogHelper.exibirAviso(ListagemController.this, "Livro removido com sucesso!");
+            }
+        };
+    }
 }

@@ -16,4 +16,7 @@ public class EditoraService {
         return EditoraMapper.entidadeParaDto(editoraDAO.buscarOuCriarPorNome(nome));
     }
 
+    public void deletarEditoraPorID(Long editoraId) {
+        editoraDAO.deleteById(editoraId);
+    }
 }

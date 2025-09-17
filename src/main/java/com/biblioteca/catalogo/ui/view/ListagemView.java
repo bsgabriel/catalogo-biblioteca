@@ -3,6 +3,7 @@ package com.biblioteca.catalogo.ui.view;
 import com.biblioteca.catalogo.dto.LivroDto;
 import com.biblioteca.catalogo.ui.components.PainelPesquisa;
 import com.biblioteca.catalogo.ui.components.TabelaLivros;
+import com.biblioteca.catalogo.ui.helper.DialogHelper;
 import com.jgoodies.forms.builder.FormBuilder;
 import com.jgoodies.forms.factories.Paddings;
 import com.jgoodies.forms.layout.FormLayout;
@@ -12,7 +13,9 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 import static com.biblioteca.catalogo.ui.factory.ButtonFactory.criarBotao;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static javax.swing.JOptionPane.*;
 
 public abstract class ListagemView extends JFrame {
 
@@ -85,7 +88,21 @@ public abstract class ListagemView extends JFrame {
 
         botaoIncluir = criarBotao("Incluir", e -> adicionarLivro());
         botaoEditar = criarBotao("Editar", e -> editarLivro(tabelaLivros.getLivroSelecionado()));
-        botaoDeletar = criarBotao("Deletar", e -> removerLivro(tabelaLivros.getLivroSelecionado()));
+
+        botaoDeletar = criarBotao("Deletar", e -> {
+            LivroDto livro = tabelaLivros.getLivroSelecionado();
+            if (isNull(livro)) {
+                DialogHelper.exibirAlerta(this, "Nenhum livro selecionado");
+                return;
+            }
+
+            if (!confirmarExclusao()) {
+                return;
+            }
+
+            removerLivro(livro);
+        });
+
         botaoImportar = criarBotao("Importar Arquivo", e -> importarArquivo());
 
         tabelaLivros.setOnSelecaoAlterada(livro -> {
@@ -219,5 +236,9 @@ public abstract class ListagemView extends JFrame {
         tabelaLivros.limparRegistros();
     }
 
+    private boolean confirmarExclusao() {
+        int result = showConfirmDialog(this, "Deseja excluir o livro?", "Confirmação", YES_NO_OPTION);
+        return result == YES_OPTION;
+    }
 
 }

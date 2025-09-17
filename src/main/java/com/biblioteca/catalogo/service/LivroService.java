@@ -1,8 +1,9 @@
 package com.biblioteca.catalogo.service;
 
 import com.biblioteca.catalogo.database.dao.LivroDAO;
-import com.biblioteca.catalogo.dto.EditoraDto;
+import com.biblioteca.catalogo.dto.AutorDto;
 import com.biblioteca.catalogo.dto.DadosImportacaoCsvDto;
+import com.biblioteca.catalogo.dto.EditoraDto;
 import com.biblioteca.catalogo.dto.LivroDto;
 import com.biblioteca.catalogo.dto.openlibrary.AutorResponseDto;
 import com.biblioteca.catalogo.dto.openlibrary.LivroResponseDto;
@@ -127,10 +128,37 @@ public class LivroService {
         return livroCsvService.processarCSV(file);
     }
 
+    /**
+     * Busca todos os livros no banco
+     *
+     * @return Lista com todos os livros cadastrados
+     */
     public List<LivroDto> buscarTodos() {
         return livroDAO.buscarTodos()
                 .stream()
                 .map(LivroMapper::entidadeParaDto)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Remove um livro. Após a exclusão, remove os registros que ficaram órfãos.
+     */
+    public void deletarLivro(LivroDto livroDto) {
+        livroDAO.delete(LivroMapper.dtoParaEntidade(livroDto));
+
+        Long editoraId = livroDto.getEditora().getEditoraId();
+
+        if (!livroDAO.editoraEmUso(editoraId)) {
+            editoraService.deletarEditoraPorID(editoraId);
+        }
+
+        livroDto.getAutores().
+                stream()
+                .map(AutorDto::getAutorId)
+                .forEach(id -> {
+                    if (!livroDAO.autorEmUso(id)) {
+                        autorService.deletarAutorPorID(id);
+                    }
+                });
     }
 }

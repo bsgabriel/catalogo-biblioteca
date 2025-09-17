@@ -30,4 +30,24 @@ public class LivroDAO extends GenericDAO<Livro, Long> {
                 .tipo(JoinType.LEFT)
                 .build());
     }
+
+    public boolean editoraEmUso(Long editoraId) {
+        String jpql = "SELECT count(l) FROM Livro l WHERE l.editora.editoraId = ?1";
+        return executeSingleQueryForType(Long.class, jpql, editoraId).orElse(0L) > 0;
+    }
+
+    public boolean autorEmUso(Long autorId) {
+        String jpql = new StringBuilder()
+                .append(" SELECT ")
+                .append("    count(l) ")
+                .append(" FROM ")
+                .append("    Livro l ")
+                .append(" JOIN ")
+                .append("    l.autores a ")
+                .append(" WHERE ")
+                .append("    a.autorId = ?1 ")
+                .toString();
+
+        return executeSingleQueryForType(Long.class, jpql, autorId).orElse(0L) > 0;
+    }
 }

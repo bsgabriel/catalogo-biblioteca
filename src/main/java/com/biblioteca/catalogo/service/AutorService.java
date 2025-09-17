@@ -16,4 +16,7 @@ public class AutorService {
         return AutorMapper.entidadeParaDto(autorDAO.buscarOuCriarPorNome(nome));
     }
 
+     public void deletarAutorPorID(Long id) {
+        autorDAO.deleteById(id);
+    }
 }

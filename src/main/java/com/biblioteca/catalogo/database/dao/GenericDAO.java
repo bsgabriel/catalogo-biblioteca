@@ -1,8 +1,6 @@
 package com.biblioteca.catalogo.database.dao;
 
 import com.biblioteca.catalogo.database.config.DatabaseManager;
-import com.biblioteca.catalogo.database.dto.Join;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -13,8 +11,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
-
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public abstract class GenericDAO<T, ID> {
 
@@ -46,9 +42,18 @@ public abstract class GenericDAO<T, ID> {
         }
     }
 
-    public Optional<T> findById(ID id) {
+    protected Optional<T> findById(ID id, String... joins) {
         EntityManager em = databaseManager.getEntityManager();
         try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<T> query = cb.createQuery(entityClass);
+            Root<T> root = query.from(entityClass);
+
+            for (String join : joins) {
+                root.fetch(join, JoinType.INNER);
+            }
+            query.distinct(joins.length > 0);
+
             T entity = em.find(entityClass, id);
             return Optional.ofNullable(entity);
         } finally {
@@ -56,25 +61,16 @@ public abstract class GenericDAO<T, ID> {
         }
     }
 
-    public List<T> findAll(Join... joins) {
+    protected List<T> findAll(String... joins) {
         EntityManager em = databaseManager.getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> query = cb.createQuery(entityClass);
             Root<T> root = query.from(entityClass);
 
-            if (joins.length > 0) {
-                boolean possuiJoin = false;
-                for (Join join : joins) {
-                    if (isBlank(join.getColuna())) {
-                        continue;
-                    }
-                    root.fetch(join.getColuna(), join.getTipo());
-                    possuiJoin = true;
-                }
-                query.distinct(possuiJoin);
+            for (String join : joins) {
+                root.fetch(join, JoinType.LEFT);
             }
-
 
             query.select(root);
 

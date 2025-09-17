@@ -1,9 +1,11 @@
 package com.biblioteca.catalogo.database.dao;
 
-import com.biblioteca.catalogo.database.dto.Join;
+import com.biblioteca.catalogo.entity.Autor;
+import com.biblioteca.catalogo.entity.Editora;
 import com.biblioteca.catalogo.entity.Livro;
 
-import javax.persistence.criteria.JoinType;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,10 +27,11 @@ public class LivroDAO extends GenericDAO<Livro, Long> {
     }
 
     public List<Livro> buscarTodos() {
-        return super.findAll(Join.builder()
-                .coluna("autores")
-                .tipo(JoinType.LEFT)
-                .build());
+        return super.findAll("autores");
+    }
+
+    public Optional<Livro> findById(Long id) {
+        return super.findById(id, "autores");
     }
 
     public boolean editoraEmUso(Long editoraId) {

@@ -7,8 +7,10 @@ import com.biblioteca.catalogo.mapper.LivroMapper;
 import lombok.Setter;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -116,6 +118,16 @@ public class TabelaLivros extends JTable {
                 } else {
                     setToolTipText(formatacaoTooltip.apply(value));
                 }
+            }
+
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                int paddingVertical = 5;
+                int paddingHorizontal = 10;
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                label.setBorder(new EmptyBorder(paddingVertical, paddingHorizontal, paddingVertical, paddingHorizontal));
+
+                return label;
             }
 
         };

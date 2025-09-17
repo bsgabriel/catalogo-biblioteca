@@ -39,8 +39,7 @@ public class ListagemController extends ListagemView {
 
     @Override
     protected void adicionarLivro() {
-        log.info("Vai abrir tela para cadastro de livro");
-        CadastroLivroController controller = new CadastroLivroController(this, livroService);
+        CadastroLivroController controller = new CadastroLivroController(this, livroService, this::atualizarListaLivros);
         controller.setVisible(true);
     }
 

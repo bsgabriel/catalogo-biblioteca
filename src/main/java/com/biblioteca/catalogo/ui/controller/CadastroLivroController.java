@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.swing.*;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 
 import static java.util.Objects.nonNull;
 
@@ -27,18 +26,20 @@ public class CadastroLivroController extends CadastroLivroView {
     private LivroDto livroEdicao;
 
     @Setter
-    private Consumer<LivroDto> onSalvar;
+    private Runnable handleCadastro;
 
     /**
      * Abre a tela de cadastro de livro para editar um livro já existente
      *
-     * @param parent       Tela que chamou essa
-     * @param livroService Service para interação com livros
+     * @param parent         Tela que chamou essa
+     * @param livroService   Service para interação com livros
+     * @param handleCadastro Ação que disparada após um cadastro/edição bem sucedida
      * @see LivroService
      */
-    public CadastroLivroController(JFrame parent, LivroService livroService) {
+    public CadastroLivroController(JFrame parent, LivroService livroService, Runnable handleCadastro) {
         super(parent);
         this.livroService = livroService;
+        this.handleCadastro = handleCadastro;
     }
 
     @Override
@@ -60,10 +61,6 @@ public class CadastroLivroController extends CadastroLivroView {
 
     @Override
     protected void salvar() {
-        if (nonNull(onSalvar)) {
-            onSalvar.accept(null);
-        }
-
         if (nonNull(cadastroWorker) && !cadastroWorker.isDone()) {
             cadastroWorker.cancel(true);
         }
@@ -128,6 +125,10 @@ public class CadastroLivroController extends CadastroLivroView {
                     get();
                     DialogHelper.exibirAviso(CadastroLivroController.this, "Sucesso", "Livro salvo com sucesso!");
                     limparTela();
+                    CadastroLivroController.this.dispose();
+                    if (nonNull(handleCadastro)) {
+                        handleCadastro.run();
+                    }
                 } catch (ExecutionException e) {
                     log.error("Erro ao buscar livro", e.getCause());
                     DialogHelper.exibirErro(CadastroLivroController.this, e.getCause().getMessage());

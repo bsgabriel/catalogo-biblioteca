@@ -7,6 +7,7 @@ import com.biblioteca.catalogo.dto.EditoraDto;
 import com.biblioteca.catalogo.dto.LivroDto;
 import com.biblioteca.catalogo.dto.openlibrary.AutorResponseDto;
 import com.biblioteca.catalogo.dto.openlibrary.LivroResponseDto;
+import com.biblioteca.catalogo.entity.Livro;
 import com.biblioteca.catalogo.exception.ApiExecutionException;
 import com.biblioteca.catalogo.exception.ConsultaLivroException;
 import com.biblioteca.catalogo.factory.LivroFactory;
@@ -14,9 +15,7 @@ import com.biblioteca.catalogo.mapper.LivroMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -161,4 +160,34 @@ public class LivroService {
                     }
                 });
     }
+
+    public List<LivroDto> buscarLivro(String termo) {
+        Map<Long, Livro> livros = new HashMap<>();
+
+        // se for apenas número filtra por id
+        if (termo.matches("\\d+")) {
+            Livro livro = livroDAO.findById(Long.valueOf(termo)).orElse(null);
+            if (nonNull(livro)) {
+                livros.put(livro.getLivroId(), livro);
+            }
+        }
+
+        // se for um ISBN valido, filtra por ele
+        String apenasNumeros = termo.replaceAll("[^0-9]", "");
+        if (apenasNumeros.length() == 10 || apenasNumeros.length() == 13) {
+            Livro livro = livroDAO.buscarPorIsbn(Long.valueOf(termo.replaceAll("[^0-9]", "")));
+            if (nonNull(livro)) {
+                livros.put(livro.getLivroId(), livro);
+            }
+        }
+
+        // busca por campos de texto (título, editora e autores)
+        livroDAO.buscarTextoGeral(termo).forEach(livro -> livros.put(livro.getLivroId(), livro));
+
+        return livros.values()
+                .stream()
+                .map(LivroMapper::entidadeParaDto)
+                .collect(Collectors.toList());
+    }
+
 }

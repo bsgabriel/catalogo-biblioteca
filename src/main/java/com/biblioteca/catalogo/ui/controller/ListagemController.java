@@ -34,7 +34,7 @@ public class ListagemController extends ListagemView {
 
     @Override
     protected void pesquisarLivro(String termo) {
-        log.info("buscando pelo livro {}", termo);
+        buscarLivro(termo);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class ListagemController extends ListagemView {
                     return livroService.buscarTodos();
                 } else {
                     log.info("Buscando livros pelo termo '{}'", termo);
-                    return new ArrayList<>();
+                    return livroService.buscarLivro(termo);
                 }
             }
 

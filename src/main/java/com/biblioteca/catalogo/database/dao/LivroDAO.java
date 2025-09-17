@@ -53,4 +53,39 @@ public class LivroDAO extends GenericDAO<Livro, Long> {
 
         return executeSingleQueryForType(Long.class, jpql, autorId).orElse(0L) > 0;
     }
+
+    public Livro buscarPorIsbn(Long isbn) {
+        EntityManager em = databaseManager.getEntityManager();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+
+        CriteriaQuery<Livro> query = cb.createQuery(entityClass);
+        Root<Livro> root = query.from(entityClass);
+
+        Predicate condicao = cb.equal(root.get("isbn"), isbn);
+        query.select(root).where(condicao);
+
+        return em.createQuery(query).getSingleResult();
+    }
+
+    public List<Livro> buscarTextoGeral(String termo) {
+        String parametro = "%" + termo + "%";
+
+        EntityManager em = databaseManager.getEntityManager();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+
+        CriteriaQuery<Livro> query = cb.createQuery(entityClass);
+        Root<Livro> root = query.from(entityClass);
+
+        Predicate condicaoTitulo = cb.like(root.get("titulo"), parametro);
+
+        Join<Livro, Editora> editoraJoin = root.join("editora", JoinType.LEFT);
+        Predicate condicaoEditora = cb.like(editoraJoin.get("nome"), parametro);
+
+        Join<Livro, Autor> autoresJoin = root.join("autores", JoinType.LEFT);
+        Predicate condicaoAutores = cb.like(autoresJoin.get("nome"), parametro);
+
+        Predicate condicaoFinal = cb.or(condicaoTitulo, condicaoEditora, condicaoAutores);
+        query.select(root).where(condicaoFinal).distinct(true);
+        return em.createQuery(query).getResultList();
+    }
 }

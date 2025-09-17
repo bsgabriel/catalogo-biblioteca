@@ -45,12 +45,4 @@ public class Livro {
     @JoinColumn(name = "editora_id")
     private Editora editora;
 
-    @ManyToMany
-    @JoinTable(
-            name = "livro_semelhante",
-            joinColumns = @JoinColumn(name = "livro_id"),
-            inverseJoinColumns = @JoinColumn(name = "semelhante_id")
-    )
-    @Builder.Default
-    private List<Livro> livrosSemelhantes = new ArrayList<>();
 }

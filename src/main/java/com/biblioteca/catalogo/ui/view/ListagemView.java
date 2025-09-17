@@ -77,7 +77,7 @@ public abstract class ListagemView extends JFrame {
     private void configurarTela() {
         setTitle("Gerenciamento de Livros");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(900, 700);
+        setSize(1000, 800);
         setLocationRelativeTo(null);
         setMinimumSize(new Dimension(800, 600));
     }

@@ -36,14 +36,14 @@ public final class InputFactory {
 
     /**
      * Cria um input de texto com a seguinte padronização:
-     * <br> -Altura: 25px
+     * <br> -Altura: 30px
      * <br> -Transforma o texto em maiúsculo
      *
      * @return Um {@link JTextField} padrão
      */
     public static JTextField criarInputTexto() {
         JTextField input = new JTextField();
-        input.setPreferredSize(new Dimension(0, 25));
+        input.setPreferredSize(new Dimension(0, 30));
 
         AbstractDocument doc = (AbstractDocument) input.getDocument();
         doc.setDocumentFilter(new DocumentFilterCaixaAlta());
@@ -58,7 +58,7 @@ public final class InputFactory {
      */
     public static JTextField criarInputNumerico() {
         JTextField input = new JTextField();
-        input.setPreferredSize(new Dimension(0, 25));
+        input.setPreferredSize(new Dimension(0, 30));
 
         AbstractDocument doc = (AbstractDocument) input.getDocument();
         doc.setDocumentFilter(new DocumentFilterNumerico());

@@ -8,10 +8,13 @@ import lombok.Setter;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -19,6 +22,7 @@ import static java.util.Objects.isNull;
 public class TabelaLivros extends JTable {
 
     private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter FORMATO_DATA_EXTENSO = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", new Locale("pt", "BR"));
     private final TableModelLivros tableModel;
 
     @Setter
@@ -57,6 +61,7 @@ public class TabelaLivros extends JTable {
         getTableHeader().setReorderingAllowed(false);
         configurarRenderers();
         configurarEventos();
+        setRowHeight(30);
     }
 
     private void configurarEventos() {
@@ -70,52 +75,96 @@ public class TabelaLivros extends JTable {
     }
 
     private void configurarRenderers() {
-        this.getColumnModel().getColumn(2).setCellRenderer(new DefaultTableCellRenderer() {
-            @Override
-            public void setValue(Object value) {
-                if (isNull(value)) {
-                    setText("");
-                    return;
-                }
+        //  id
+        setarFormatacaoColuna(0, SwingConstants.CENTER, 40, 50, 80, null, null);
 
-                List<AutorDto> autores = (List<AutorDto>) value;
+        // titulo
+        setarFormatacaoColuna(1, SwingConstants.LEFT, 150, 250, Integer.MAX_VALUE, null, null);
 
-                if (autores.isEmpty()) {
-                    setText("");
-                    return;
-                }
+        // autores
+        setarFormatacaoColuna(2, SwingConstants.LEFT, 120, 200, Integer.MAX_VALUE, this::formatarValorAutores, this::formatarTooltipAutores);
 
-                String nomes = autores.stream()
-                        .map(AutorDto::getNome)
-                        .collect(Collectors.joining(", "));
+        // data publicação
+        setarFormatacaoColuna(3, SwingConstants.CENTER, 120, 120, 120, this::formatarValorDataPublicacao, this::formatarTooltipDataPublicacao);
 
-                setText((nomes));
-            }
-        });
+        // isbn
+        setarFormatacaoColuna(4, SwingConstants.CENTER, 100, 120, 150, null, null);
 
-        this.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
-            @Override
-            public void setValue(Object value) {
-                if (isNull(value)) {
-                    setText("");
-                    return;
-                }
+        // Editora
+        setarFormatacaoColuna(5, SwingConstants.LEFT, 100, 150, Integer.MAX_VALUE, this::formatarValorEditora, this::formatarValorEditora);
 
-                LocalDate dataPublicacao = (LocalDate) value;
-                setText((dataPublicacao.format(FORMATO_DATA)));
-            }
-        });
-
-        this.getColumnModel().getColumn(5).setCellRenderer(new DefaultTableCellRenderer() {
-            @Override
-            public void setValue(Object value) {
-                if (isNull(value)) {
-                    setText("");
-                    return;
-                }
-
-                setText(((EditoraDto) value).getNome());
-            }
-        });
     }
+
+    private void setarFormatacaoColuna(int idxColuna, int alinhamento, Integer lMinima, Integer lPreferida, Integer lMaxima, Function<Object, String> formatacaoValor, Function<Object, String> formatacaoTooltip) {
+        DefaultTableCellRenderer renderValor = new DefaultTableCellRenderer() {
+            @Override
+            public void setValue(Object value) {
+                if (isNull(value)) {
+                    setText("");
+                    setToolTipText("");
+                    return;
+                }
+
+                if (isNull(formatacaoValor)) {
+                    setText(value.toString());
+                } else {
+                    setText(formatacaoValor.apply(value));
+                }
+
+                if (isNull(formatacaoTooltip)) {
+                    setToolTipText(value.toString());
+                } else {
+                    setToolTipText(formatacaoTooltip.apply(value));
+                }
+            }
+
+        };
+        renderValor.setHorizontalAlignment(alinhamento);
+
+        TableColumn coluna = this.getColumnModel().getColumn(idxColuna);
+        coluna.setCellRenderer(renderValor);
+        coluna.setMinWidth(lMinima);
+        coluna.setPreferredWidth(lPreferida);
+        coluna.setMaxWidth(lMaxima);
+    }
+
+    private String formatarValorAutores(Object value) {
+        List<AutorDto> autores = (List<AutorDto>) value;
+        if (autores.isEmpty()) {
+            return "";
+        }
+
+        return autores.stream()
+                .map(AutorDto::getNome)
+                .collect(Collectors.joining(", "));
+
+    }
+
+    private String formatarValorEditora(Object value) {
+        return ((EditoraDto) value).getNome();
+    }
+
+    private String formatarValorDataPublicacao(Object value) {
+        LocalDate dataPublicacao = (LocalDate) value;
+        return dataPublicacao.format(FORMATO_DATA);
+    }
+
+    private String formatarTooltipDataPublicacao(Object value) {
+        LocalDate dataPublicacao = (LocalDate) value;
+        return dataPublicacao.format(FORMATO_DATA_EXTENSO);
+    }
+
+    private String formatarTooltipAutores(Object value) {
+        List<AutorDto> autores = (List<AutorDto>) value;
+        if (autores.isEmpty()) {
+            return "";
+        }
+
+        String autoresBr = autores.stream()
+                .map(AutorDto::getNome)
+                .collect(Collectors.joining("<br>"));
+
+        return "<html>" + autoresBr + "</html>";
+    }
+
 }

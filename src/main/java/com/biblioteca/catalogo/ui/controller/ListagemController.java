@@ -139,8 +139,9 @@ public class ListagemController extends ListagemView {
                 // apenas sucesso, sem erro
                 if (qtdSucesso > 0 && qtdErro == 0) {
                     sb.append("Livros importados com sucesso: ").append(qtdSucesso).append("\n");
-                    sb.append("Nenhum livro com erro\n");
-                    DialogHelper.exibirAvisoDetalhado(ListagemController.this, titulo, sb.toString());
+                    sb.append("Importação ocorreu sem erros\n");
+                    atualizarListaLivros();
+                    DialogHelper.exibirAviso(ListagemController.this, titulo, sb.toString());
                     return;
                 }
 
@@ -148,6 +149,7 @@ public class ListagemController extends ListagemView {
                 if (qtdSucesso == 0 && qtdErro > 0) {
                     sb.append("Nenhum livro pôde ser importado devido à erros na importação:\n");
                     dadosImportacao.getErros().forEach(e -> sb.append("- ").append(e).append("\n"));
+                    atualizarListaLivros();
                     DialogHelper.exibirErroDetalhado(ListagemController.this, titulo, sb.toString());
                     return;
                 }
@@ -157,6 +159,7 @@ public class ListagemController extends ListagemView {
                 sb.append("Livros com erro de importação: ").append(qtdErro).append("\n\n");
                 sb.append("Erros:\n");
                 dadosImportacao.getErros().forEach(e -> sb.append("- ").append(e).append("\n"));
+                atualizarListaLivros();
                 DialogHelper.exibirAlertaDetalhado(ListagemController.this, titulo, sb.toString());
             }
         };

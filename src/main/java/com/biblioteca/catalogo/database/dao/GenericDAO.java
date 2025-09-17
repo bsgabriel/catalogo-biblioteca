@@ -72,7 +72,7 @@ public abstract class GenericDAO<T, ID> {
                 root.fetch(join, JoinType.LEFT);
             }
 
-            query.select(root);
+            query.select(root).distinct(true);
 
             return em.createQuery(query).getResultList();
         } finally {

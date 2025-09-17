@@ -87,7 +87,15 @@ public abstract class ListagemView extends JFrame {
         tabelaLivros = new TabelaLivros();
 
         botaoIncluir = criarBotao("Incluir", e -> adicionarLivro());
-        botaoEditar = criarBotao("Editar", e -> editarLivro(tabelaLivros.getLivroSelecionado()));
+        botaoEditar = criarBotao("Editar", e -> {
+            LivroDto livro = tabelaLivros.getLivroSelecionado();
+            if (isNull(livro)) {
+                DialogHelper.exibirAlerta(this, "Nenhum livro selecionado");
+                return;
+            }
+
+            editarLivro(livro);
+        });
 
         botaoDeletar = criarBotao("Deletar", e -> {
             LivroDto livro = tabelaLivros.getLivroSelecionado();

@@ -18,6 +18,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static com.biblioteca.catalogo.ui.factory.ButtonFactory.criarBotao;
 import static com.biblioteca.catalogo.ui.factory.InputFactory.criarInputTitulo;
@@ -309,6 +310,11 @@ public abstract class CadastroLivroView extends JDialog {
     }
 
     protected void preencherDadosLivro(LivroDto livro) {
+        String strIsbn = Optional.ofNullable(livro.getIsbn())
+                .map(Object::toString)
+                .orElse("");
+
+        inputISBN.setText(strIsbn);
         inputTitulo.setText(livro.getTitulo());
 
         if (nonNull(livro.getEditora())) {

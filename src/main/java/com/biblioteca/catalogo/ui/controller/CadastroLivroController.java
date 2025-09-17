@@ -19,17 +19,17 @@ import static java.util.Objects.nonNull;
 public class CadastroLivroController extends CadastroLivroView {
 
     private final LivroService livroService;
+    private final LivroDto livroEdicao;
+
     private SwingWorker<LivroDto, Integer> buscaWorker;
     private SwingWorker<Void, Void> cadastroWorker;
 
-    @Setter
-    private LivroDto livroEdicao;
 
     @Setter
     private Runnable handleCadastro;
 
     /**
-     * Abre a tela de cadastro de livro para editar um livro já existente
+     * Abre a tela de cadastro de livro para cadastrar um novo livro
      *
      * @param parent         Tela que chamou essa
      * @param livroService   Service para interação com livros
@@ -37,9 +37,24 @@ public class CadastroLivroController extends CadastroLivroView {
      * @see LivroService
      */
     public CadastroLivroController(JFrame parent, LivroService livroService, Runnable handleCadastro) {
+        this(parent, livroService, handleCadastro, null);
+    }
+
+    /**
+     * Abre a tela de cadastro de livro para editar um livro já existente
+     *
+     * @param parent         Tela que chamou essa
+     * @param livroService   Service para interação com livros
+     * @param handleCadastro Ação que disparada após um cadastro/edição bem sucedida
+     * @param livroEdicao    Livro para ser editado
+     * @see LivroService
+     */
+    public CadastroLivroController(JFrame parent, LivroService livroService, Runnable handleCadastro, LivroDto livroEdicao) {
         super(parent);
         this.livroService = livroService;
         this.handleCadastro = handleCadastro;
+        this.livroEdicao = livroEdicao;
+        preencherDadosLivro(livroEdicao);
     }
 
     @Override

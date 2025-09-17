@@ -107,5 +107,9 @@ public class PainelPesquisa extends JPanel {
         return campoPesquisa.getText().trim();
     }
 
+    public void setText(String texto) {
+        campoPesquisa.setText(texto);
+    }
+
 
 }

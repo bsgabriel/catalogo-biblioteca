@@ -50,11 +50,8 @@ public class ListagemController extends ListagemView {
 
     @Override
     protected void editarLivro(LivroDto livroDto) {
-        if (isNull(livroDto)) {
-            DialogHelper.exibirAlerta(this, "Nenhum livro selecionado");
-            return;
-        }
-        log.info("abrir tela de edição (tela de cadastro pré preenchida)");
+        CadastroLivroController controller = new CadastroLivroController(this, livroService, this::atualizarListaLivros, livroDto);
+        controller.setVisible(true);
     }
 
     @Override

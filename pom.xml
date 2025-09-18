@@ -27,6 +27,9 @@
         <retrofit.version>3.0.0</retrofit.version>
         <jackson-converter.version>3.0.0</jackson-converter.version>
         <jackson-datatype.version>2.20.0</jackson-datatype.version>
+        <lgoodatepicker.version>11.2.1</lgoodatepicker.version>
+        <junit.version>4.13.2</junit.version>
+        <mockito.version>3.12.4</mockito.version>
     </properties>
 
     <dependencies>
@@ -81,7 +84,7 @@
         <dependency>
             <groupId>com.github.lgooddatepicker</groupId>
             <artifactId>LGoodDatePicker</artifactId>
-            <version>11.2.1</version>
+            <version>${lgoodatepicker.version}</version>
         </dependency>
 
         <!-- http -->
@@ -99,6 +102,20 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson-datatype.version}</version>
+        </dependency>
+
+        <!-- Testes -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

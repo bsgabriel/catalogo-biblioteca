@@ -76,10 +76,10 @@ public class LivroCsvService {
     private boolean isLinhaCabecalho(String linha) {
         String dadosLinha = linha.toLowerCase();
         return dadosLinha.contains("isbn")
-                || dadosLinha.contains("titulo")
-                || dadosLinha.contains("editora")
+                || dadosLinha.contains("titulo_livro")
+                || dadosLinha.contains("nome_editora")
                 || dadosLinha.contains("data_publicacao")
-                || dadosLinha.contains("autor");
+                || dadosLinha.contains("nome_autores");
     }
 
     /**

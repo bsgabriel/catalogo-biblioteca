@@ -12,6 +12,7 @@ import com.biblioteca.catalogo.exception.ApiExecutionException;
 import com.biblioteca.catalogo.exception.ConsultaLivroException;
 import com.biblioteca.catalogo.factory.LivroFactory;
 import com.biblioteca.catalogo.mapper.LivroMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -22,6 +23,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
+@RequiredArgsConstructor
 public class LivroService {
 
     private final LivroDAO livroDAO;

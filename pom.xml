@@ -30,6 +30,7 @@
         <lgoodatepicker.version>11.2.1</lgoodatepicker.version>
         <junit.version>4.13.2</junit.version>
         <mockito.version>3.12.4</mockito.version>
+        <h2.version>2.1.214</h2.version>
     </properties>
 
     <dependencies>
@@ -53,6 +54,11 @@
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
             <version>${liquibase.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
         </dependency>
 
         <!-- util -->

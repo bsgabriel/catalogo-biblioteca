@@ -2,6 +2,8 @@ package com.biblioteca.catalogo.database.dao;
 
 import com.biblioteca.catalogo.entity.Autor;
 
+import java.util.Optional;
+
 public class AutorDAO extends GenericDAO<Autor, Long> {
 
     public AutorDAO() {
@@ -9,15 +11,13 @@ public class AutorDAO extends GenericDAO<Autor, Long> {
     }
 
     /**
-     * Busca um autor por nome. Se não encontrar, cria e a retorna.
+     * Busca um autor por nome.
      *
      * @param nome do autor a ser buscado
-     * @return {@link Autor} encontrado ou criado
+     * @return {@link Optional<Autor>} encontrado
      */
-    public Autor buscarOuCriarPorNome(String nome) {
+    public Optional<Autor> buscarPorNome(String nome) {
         String jpql = "SELECT a FROM Autor a WHERE a.nome = ?1";
-        return executeSingleQuery(jpql, nome).orElseGet(() -> save(Autor.builder()
-                .nome(nome)
-                .build()));
+        return executeSingleQuery(jpql, nome);
     }
 }

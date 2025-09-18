@@ -27,6 +27,8 @@
         <retrofit.version>3.0.0</retrofit.version>
         <jackson-converter.version>3.0.0</jackson-converter.version>
         <jackson-datatype.version>2.20.0</jackson-datatype.version>
+        <lgoodatepicker.version>11.2.1</lgoodatepicker.version>
+        <h2.version>2.2.220</h2.version>
     </properties>
 
     <dependencies>
@@ -50,6 +52,11 @@
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
             <version>${liquibase.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
         </dependency>
 
         <!-- util -->
@@ -81,7 +88,7 @@
         <dependency>
             <groupId>com.github.lgooddatepicker</groupId>
             <artifactId>LGoodDatePicker</artifactId>
-            <version>11.2.1</version>
+            <version>${lgoodatepicker.version}</version>
         </dependency>
 
         <!-- http -->

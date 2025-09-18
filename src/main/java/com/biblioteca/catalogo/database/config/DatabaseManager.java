@@ -1,5 +1,6 @@
 package com.biblioteca.catalogo.database.config;
 
+import com.biblioteca.catalogo.enums.TipoConexaoBanco;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -19,6 +20,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 @Slf4j
 @NoArgsConstructor
 public class DatabaseManager {
@@ -27,6 +30,7 @@ public class DatabaseManager {
     private static boolean bancoInicializado;
 
     private Properties dbProperties;
+    private TipoConexaoBanco tipoBanco;
 
     @Getter
     private EntityManagerFactory entityManagerFactory;
@@ -44,14 +48,17 @@ public class DatabaseManager {
             return;
         }
 
+        this.tipoBanco = getTipoBanco();
+
         try {
+            log.info("Inicializando banco: {}", tipoBanco.name());
             carregarProperties();
             executarLiquibase();
             iniciarHibernate();
-            log.info("Inicialização concluída com sucesso");
+            log.info("Inicialização concluída com sucesso para: {}", tipoBanco.name());
             bancoInicializado = true;
         } catch (Exception e) {
-            // TODO: criar exception personalizada
+            log.error("Erro ao inicializar banco {}", tipoBanco.name());
             throw new RuntimeException("Erro ao iniciar o banco de dados", e);
         }
     }
@@ -62,23 +69,33 @@ public class DatabaseManager {
 
     private void carregarProperties() throws Exception {
         dbProperties = new Properties();
-        try (InputStream arquivo = getClass().getResourceAsStream("/liquibase.properties")) {
+        String arquivoProperties = tipoBanco.getPathLiquibaseProperties();
+
+        try (InputStream arquivo = getClass().getResourceAsStream(arquivoProperties)) {
+            if (arquivo == null) {
+                throw new RuntimeException("Arquivo não encontrado: " + arquivoProperties);
+            }
             dbProperties.load(arquivo);
+            log.debug("Properties carregadas de: {}", arquivoProperties);
         }
     }
 
     private void executarLiquibase() throws Exception {
-        Connection conn = DriverManager.getConnection(
-                dbProperties.getProperty("url"),
-                dbProperties.getProperty("username"),
-                dbProperties.getProperty("password")
-        );
+        String url = dbProperties.getProperty("url");
+        String username = dbProperties.getProperty("username");
+        String password = dbProperties.getProperty("password");
+
+        log.debug("Conectando no banco: {}", url);
+
+        Connection conn = DriverManager.getConnection(url, username, password);
 
         Database database = DatabaseFactory.getInstance()
                 .findCorrectDatabaseImplementation(new JdbcConnection(conn));
 
         String defaultSchema = dbProperties.getProperty("defaultSchemaName");
-        database.setDefaultSchemaName(defaultSchema);
+        if (isNotBlank(defaultSchema)) {
+            database.setDefaultSchemaName(defaultSchema);
+        }
 
         Liquibase liquibase = new Liquibase(
                 dbProperties.getProperty("changeLogFile"),
@@ -91,15 +108,25 @@ public class DatabaseManager {
     }
 
     private void iniciarHibernate() {
-        entityManagerFactory = Persistence.createEntityManagerFactory("biblioteca");
+        entityManagerFactory = Persistence.createEntityManagerFactory(tipoBanco.getUnidadePersistencia());
     }
 
-    @Getter
-    private static class DadosBanco {
-        private String url;
-        private String usuario;
-        private String senha;
-        private String defaultSchema;
-        private String arquivoChangelog;
+    /**
+     * Retorna o tipo de conexão com base no parâmetro database.type da JVM. Se for inválido ou não achar, usa o tipo H2_MEMORIA
+     *
+     * @return {@link TipoConexaoBanco} tipo de conexão com o banco
+     */
+    private TipoConexaoBanco getTipoBanco() {
+        String tipoDb = System.getProperty("database.type");
+
+        if ("postgres".equals(tipoDb)) {
+            return TipoConexaoBanco.POSTGRES;
+        }
+
+        if ("arquivo".equals(tipoDb)) {
+            return TipoConexaoBanco.H2_ARQUIVO;
+        }
+
+        return TipoConexaoBanco.H2_MEMORIA;
     }
 }

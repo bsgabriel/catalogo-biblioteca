@@ -12,6 +12,7 @@ import com.biblioteca.catalogo.exception.ApiExecutionException;
 import com.biblioteca.catalogo.exception.ConsultaLivroException;
 import com.biblioteca.catalogo.factory.LivroFactory;
 import com.biblioteca.catalogo.mapper.LivroMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -22,6 +23,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
+@RequiredArgsConstructor
 public class LivroService {
 
     private final LivroDAO livroDAO;
@@ -161,6 +163,17 @@ public class LivroService {
                 });
     }
 
+    /**
+     * Busca inteligente por termo, efetuando as seguintes validações e buscas:
+     * <br>- Se o termo informado for um número (termo.matches("\\d+")), busca por ID.
+     * <br>- Remove hífens e valida o ISBN. Se for um ISBN válido, faz a busca por ISBN.
+     * <br>- Busca pelo título, autores e editora.
+     * <br>
+     * Para cada resultado das buscas, o livro é adicionado num Map, tendo como chave, o seu ID. Desse modo, não vai acontecer de um livro aparecer repetidamente.
+     *
+     * @param termo Termo a ser buscado, podendo ser o código do livro, ISBN, título, nome de um autor ou o nome da editora.
+     * @return Lista com os livros que batem com a busca
+     */
     public List<LivroDto> buscarLivro(String termo) {
         Map<Long, Livro> livros = new HashMap<>();
 
